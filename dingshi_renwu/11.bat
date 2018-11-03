@@ -1,0 +1,1 @@
+D:/phpStudy/PHPTutorial/php/php-5.4.45/php.exe -q E:/firstsession/second.php
