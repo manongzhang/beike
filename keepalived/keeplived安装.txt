@@ -1,0 +1,132 @@
+安装扩展:
+[root@master keepalived-1.1.20]# yum -y install kernel-headers kernel-devel openssl-devel popt-devel
+=====================================================================================================
+编译:
+	[root@master keepalived-1.1.20]# ./configure --prefix=/
+安装:
+	[root@master keepalived-1.1.20]# make && make install
+开机自启动:
+	[root@master /]# chkconfig keepalived on
+备注:master 和 slave上面都安装
+=====================================================================================================
+实验环境
+	192.168.132.132[master]
+	192.168.132.133[slave]
+	192.168.132.210 [vip]
+=====================================================================================================
+修改配置文件[master]
+[root@master /]# vim /etc/keepalived/keepalived.conf 
+
+!Configuration File for keepalived
+
+global_defs {
+   router_id MySQLA    #标记路由id
+}
+
+vrrp_script check_mysql {
+  script "/keepalived_mysql.sh"  #需要定时执行脚本
+  interval 5   #多少秒执行一次
+}
+
+vrrp_instance VI_1{
+    state MASTER  #关键字master必须写
+    interface eth0
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.132.210  #vip路由
+    }
+	#执行脚本
+    track_script {
+        check_mysql
+    }
+}
+=====================================================================================================
+修改配置文件[slave]
+ ! Configuration File for keepalived
+
+global_defs {
+   router_id MySQLB #路由id
+}
+
+vrrp_script check_mysql {
+  script "/keepalived_mysql.sh"
+  interval 5
+}
+
+vrrp_instance VI_1 {
+    state BACKUP   #关键字必须写
+    interface eth0
+    virtual_router_id 51
+    priority 70
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.132.210
+    }
+
+    track_script {
+        check_mysql
+    }
+}
+===============================keepalived_mysql.sh=====================================================
+#/bin/bash
+user="root";
+password="123456";
+host="127.0.0.1";
+/usr/local/mysql/bin/mysql -h $host -u$user -p$password  -e "show databases" > /dev/null 2>&1;
+
+if [ $? -ne 0 ]
+then
+    service mysqld stop;
+    service keepalived stop;
+fi
+=====================================================================================================
+测试:
+【master】
+	[root@master /]# service mysqld start
+	Starting MySQL..                                           [确定]
+	[root@master /]# service keepalived start
+	启动 keepalived：                                          [确定]
+	[root@master /]# ip addr
+	1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue 
+		link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+		inet 127.0.0.1/8 scope host lo
+		inet6 ::1/128 scope host 
+		   valid_lft forever preferred_lft forever
+	2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast qlen 1000
+		link/ether 00:0c:29:eb:18:28 brd ff:ff:ff:ff:ff:ff
+		inet 192.168.132.132/24 brd 192.168.132.255 scope global eth0
+		inet 192.168.132.210/32 scope global eth0 #################有漂移vip
+		inet6 fe80::20c:29ff:feeb:1828/64 scope link 
+		   valid_lft forever preferred_lft forever
+	3: sit0: <NOARP> mtu 1480 qdisc noop 
+		link/sit 0.0.0.0 brd 0.0.0.0
+【slave】
+		[root@slave1 ~]# ip addr
+	1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue 
+		link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+		inet 127.0.0.1/8 scope host lo
+		inet6 ::1/128 scope host 
+		   valid_lft forever preferred_lft forever
+	2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast qlen 1000
+		link/ether 00:0c:29:dd:70:6d brd ff:ff:ff:ff:ff:ff
+		inet 192.168.132.133/24 brd 192.168.132.255 scope global eth0
+		inet6 fe80::20c:29ff:fedd:706d/64 scope link 
+		   valid_lft forever preferred_lft forever
+	3: sit0: <NOARP> mtu 1480 qdisc noop 
+		link/sit 0.0.0.0 brd 0.0.0.0
+=====================================================================================================
+现在停止mysql
+	1.发现漂移ip地址 192.168.132.210没有见了,在slave上面出现192.168.132.210
+	
+	
+总结：不仅可以监控mysql，还可以监控nginx
