@@ -1,0 +1,75 @@
+mysql安装
+1.安装上传下载工具
+[root@VM_0_9_centos local]# yum install lrzsz -y
+================================================================================================
+2.安装基础依赖包
+[root@VM_0_9_centos local]# yum install gcc*  #检测安装环境依赖关系
+================================================================================================
+3.安装mysql扩展包
+[root@VM_0_9_centos soft]# yum install ncurses-devel -y
+================================================================================================
+4.准备对应的安装包
+[root@VM_0_9_centos soft]# pwd
+/soft
+-rw-r--r-- 1 root root  5691656 Aug 13  2016 cmake-2.8.8.tar.gz   #编译安装需要的工具软件
+-rw-r--r-- 1 root root 24596474 Aug 13  2016 mysql-5.5.32.tar.gz  #二进制安装包
+================================================================================================
+5.安装编译mysql工具包
+[root@VM_0_9_centos soft]# tar -xvf cmake-2.8.8.tar.gz  #解压工具包
+[root@VM_0_9_centos soft]# cd cmake-2.8.8/ 				#进入工具解压目录
+[root@VM_0_9_centos cmake-2.8.8]# ./configure  			#检查安装环境
+[root@VM_0_9_centos cmake-2.8.8]# gmake && make install #编译切安装
+================================================================================================
+6.安装mysql
+======>创建目录
+	[root@VM_0_9_centos mysql-5.5.32]# mkdir /usr/local/mysql
+======>创建用户组
+	[root@VM_0_9_centos mysql-5.5.32]# groupadd mysql
+======>创建用户
+	[root@VM_0_9_centos mysql-5.5.32]# useradd mysql -s /sbin/nologin -M -g mysql
+======>目录赋权限
+	[root@VM_0_9_centos mysql-5.5.32]# chown -R mysql.mysql /usr/local/mysql
+======>解压软件包
+	[root@VM_0_9_centos soft]# tar -xvf mysql-5.5.32.tar.gz
+================================================================================================
+======>编译mysql参数
+	[root@VM_0_9_centos mysql-5.5.32]# cmake 
+		. -DCMAKE_INSTALL_PREFIX=/usr/local/mysql 
+		  -DMYSQL_DATADIR=/usr/local/mysql/data 
+		  -DMYSQL_UNIX_ADDR=/usr/local/mysql/mysql.sock 
+		  -DDEFAULT_CHARSET=utf8 
+		  -DDEFAULT_COLLATION=utf8_general_ci 
+		  -DEXTRA_CHARSETS=gbk,gb2312,utf8,ascii 
+		  -DENABLED_LOCAL_INFILE=ON 
+		  -DWITH_INNOBASE_STORAGE_ENGINE=1 
+		  -DWITH_FEDERATED_STORAGE_ENGINE=1 
+		  -DWITH_BLACKHOLE_STORAGE_ENGINE=1 
+		  -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 
+		  -DWITHOUT_PARTITION_STORAGE_ENGINE=1 
+		  -DWITH_FAST_MUTEXES=1 
+		  -DWITH_ZLIB=bundled 
+		  -DENABLED_LOCAL_INFILE=1 
+		  -DWITH_READLINE=1 
+		  -DWITH_EMBEDDED_SERVER=1 
+		  -DWITH_DEBUG=0
+======>编译切安装
+	[root@VM_0_9_centos mysql-5.5.32]# make && make install
+======>创建配置文件
+	[root@VM_0_9_centos mysql-5.5.32]# cp support-files/my-small.cnf /etc/my.cnf
+======>配置环境变量
+	[root@VM_0_9_centos mysql-5.5.32]# echo 'export PATH=/usr/local/mysql/bin:$PATH' >> /etc/profile
+======>初始化mysql
+	[root@VM_0_9_centos scripts]# ./mysql_install_db 
+		--basedir=/usr/local/mysql 
+		--datadir=/usr/local/mysql/data 
+		--user=mysql
+======>配置mysql服务启动命令
+	[root@VM_0_9_centos scripts]# cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
+======>赋权限
+	[root@VM_0_9_centos scripts]# chmod +x /etc/init.d/mysqld
+======>启动mysql
+	root@VM_0_9_centos scripts]# /etc/init.d/mysqld start
+======>修改密码
+	[root@VM_0_9_centos scripts]# /usr/local/mysql/bin/mysqladmin -u root password '123456';
+======>查看是否启动成功
+	[root@VM_0_9_centos scripts]# ps aux | grep mysqld

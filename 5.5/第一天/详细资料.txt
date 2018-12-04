@@ -1,0 +1,82 @@
+1.配置静态ip地址
+[root@localhost ~]# vim /etc/sysconfig/network-scripts/ifcfg-eth0 
+	# Intel Corporation 82545EM Gigabit Ethernet Controller (Copper)
+	DEVICE=eth0
+	#BOOTPROTO=dhcp 
+	BOOTPROTO=static
+	ONBOOT=yes
+	TYPE=Ethernet
+	HWADDR=00:0c:29:eb:18:28
+	IPADDR=192.168.51.147
+	NETMASK=255.255.255.0
+	GATEWAY=192.168.51.1
+	DNS1=8.8.8.8
+================================================================================
+安装nginx
+================================================================================
+location匹配级别
+(location =) > (location 完整路径) > (location ~ 路径) > (location ~* 正则顺序) > (location 部分起始路径) > (/)
+实例1:   
+	location =/a.html {
+        return 403;
+    }   
+    location /a.html {
+        return 404;
+    }   
+总结:浏览器会返回403
+------------------------------------------
+    location /images {
+        return 405;
+    }   
+    location ~ /images {
+        return 404;
+    }  
+总结:浏览器返回404	
+------------------------------------------
+    location ~* /images {
+        return 405;
+    }   
+    location ~/images {
+        return 404;
+    }   
+总结浏览器返回405
+-------------------------------------------
+==================================================================================================
+判断(if)
+	-f和!-f用来判断是否存在文件
+	-d和!-d用来判断是否存在目录
+	-e和!-e用来判断是否存在文件或目录
+	-x和!-x用来判断文件是否可执行
+	location / { 
+        root   html;
+        index  index.html index.htm;
+        if ($request_method = GET) {
+            return 402;
+        }   
+    }  
+	--------------------------------------------------------------
+	 location / { 
+        root   html;
+        index  index.html index.htm;
+        if ( -f $request_filename) {
+			return 405;
+        }   
+    }   
+	---------------------------------------------------------------
+	
+重写(rewrite)
+标记位
+	last : 相当于Apache的[L]标记，表示完成rewrite
+	break : 停止执行当前虚拟主机的后续rewrite指令集
+	redirect : 返回302临时重定向，地址栏会显示跳转后的地址
+	permanent : 返回301永久重定向，地址栏会显示跳转后的地址
+
+	
+    location / { 
+        root   html;
+        index  index.html index.htm;
+        #if ( -f $request_filename) {
+            rewrite ^/(.*)$ /index.html break; 
+        #}  
+    }   
+	

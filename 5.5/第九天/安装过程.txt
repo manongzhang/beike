@@ -1,0 +1,42 @@
+[root@master svn]# tar -xvf subversion-1.6.1.tar.gz 
+[root@master svn]# tar -xvf subversion-deps-1.6.1.tar.gz
+[root@master subversion-1.6.1]# ./configure  --prefix=/svn   #检查
+[root@master subversion-1.6.1]# make   #编译
+[root@master subversion-1.6.1]# make install   #安装
+
+[root@master bin]# vim /etc/profile   #引入配置文件
+	引入内容 [
+		SVNPATH=$PATH:/opt/subversion/bin
+		export SVNPATH
+	]
+[root@master bin]# ./svnserve --version
+[root@master bin]# mkdir -p /svndata/repos   #创建svn版本库
+[root@master bin]# ./svnadmin create /svndata/repos/    svn 和目录建立对应关系
+[root@master bin]# ./svnserve -d -r /svndata    #启动svn
+[root@master bin]# ps -ef | grep svn | grep -v grep   #查看启动进程
+[root@master bin]# netstat -ant | grep 3690   #查看端口
+[root@master conf]# ls
+	authz  passwd  svnserve.conf
+修改conf目录下三个文件
+svnserve.conf ====svn 配置文件
+	[general]
+		anon-access = read #非法用户可以访问 
+		auth-access = write # 权限用户可以写
+		password-db = passwd # 指明密码文件路径
+		authz-db    = authz # 访问控制文件
+		realm 		= /svndata/repos # 认证命名空间
+passwd		  =====密码文件
+		[users]
+		username1 = password1 [配置用户名和密码]
+		username2 = password2 [配置用户名和密码]
+authz		  ======权限文件
+	[groups]
+	[/]
+	zhangting=rw  #配置用户
+
+
+
+
+
+
+

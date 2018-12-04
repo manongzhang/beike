@@ -1,0 +1,12 @@
+[root@localhost tmp]# ps aux | grep ssh  #查看ssh服务启动 22端口
+[root@localhost tmp]# service sshd stop  #停止ssh服务
+[root@localhost tmp]# service sshd start  #开启ssh服务
+
+
+[zhangting@master ~]$ ssh-keygen -t dsa    #创建秘钥
+[zhangting@master ~]$ ll .ssh/
+-rw------- 1 zhangting zhangting 668 10-25 22:16 id_dsa
+-rw-r--r-- 1 zhangting zhangting 606 10-25 22:16 id_dsa.pub
+#创建完成后有2个文件分别是私钥和公钥
+[zhangting@master ~]$ ssh-copy-id -i .ssh/id_dsa.pub zhangting@192.168.132.133 #将公钥发送给不同的服务器
+[zhangting@master ~]$ scp -P 22 /tmp/1.txt zhangting@192.168.132.133:/tmp   #传输不需要密码因为有ssh下发秘钥
