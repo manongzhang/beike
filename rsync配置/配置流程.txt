@@ -1,0 +1,40 @@
+1.配置环境
+	三台机器
+		192.168.132.132[MASTER]
+		192.168.132.135[SERVER1] 提供服务【web服务器】
+		192.168.132.136[SERVER2] 提供服务【web服务器】
+==============================================================================
+2.配置SERVER【配置配置文件】[rsync.conf]  [192.168.132.135和192.168.132.136]
+	uid=root
+	gid=root
+	use chroot=no
+	max connections=2000
+	timeout=600
+	pid file = /var/run/rsyncd.pid
+	lock file=/var/run/rsyncd.lock
+	log file = /var/run/rsyncd.log
+	ignore errors
+	read only = false
+	list = false
+	hosts allow =192.168.0.0/24
+	hosts  deny = 0.0.0.0/32
+	auth users = rsync_backup
+	secrets file = /etc/rsync.password
+	#www是表示要同步到服务器上面目录
+	[www]
+	path = /tmp/aa/www/
+==============================================================================
+3.创建密码文件 [192.168.132.135和192.168.132.136]
+	echo "rsync_backup:oldboy" > /etc/rsync.password
+==============================================================================
+4.启动rsync服务 [192.168.132.135 和 192.168.132.136] 查看端口
+	[root@localhost www]# rsync --daemon
+	[root@localhost www]# lsof -i tcp:873
+		COMMAND  PID USER   FD   TYPE DEVICE SIZE NODE NAME
+		rsync   3636 root    3u  IPv6  13597       TCP *:rsync (LISTEN)
+		rsync   3636 root    5u  IPv4  13598       TCP *:rsync (LISTEN)
+#如果出现端口说明配置成功
+==============================================================================
+5.手工同步
+[root@master aa]# rsync -avzP /tmp/aa/www/ rsync_backup@192.168.132.135::www/ --password-file=/etc/rsync.password 
+#备注:www/为配置文件里面段落标记	
