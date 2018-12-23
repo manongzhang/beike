@@ -37,4 +37,40 @@
 ==============================================================================
 5.手工同步
 [root@master aa]# rsync -avzP /tmp/aa/www/ rsync_backup@192.168.132.135::www/ --password-file=/etc/rsync.password 
-#备注:www/为配置文件里面段落标记	
+#备注:www/为配置文件里面段落标记
+==============================================================================
+6.sersync下载
+https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/sersync/sersync2.5_32bit_binary_stable_final.tar.gz
+==============================================================================
+7.解压 && 重命名
+[root@master soft]# tar -xvf sersync2.5_32bit_binary_stable_final.tar.gz -C /usr/local/
+[root@master local]# mv GNU-Linux-x86/ sersync
+==============================================================================
+8.重写规划
+[root@master sersync]# mkdir conf bin logs
+[root@master sersync]# mv confxml.xml conf/
+[root@master sersync]# mv sersync2 bin/sersync
+==============================================================================
+9.配置&&备份
+[root@master sersync]# /bin/cp /usr/local/sersync/conf/confxml.xml conf/confxml.xml.bak.$(date +%F)
+[root@master conf]# vim confxml.xml 
+[修改如下配置]
+    <localpath watch="/tmp/aa/www">
+        <remote ip="192.168.132.135" name="www"/>
+        <remote ip="192.168.132.136" name="www">
+    </localpath>   
+    <rsync>
+        <commonParams params="-artuz"/>
+        <auth start="true" users="rsync_backup" passwordfile="/etc/rsync.password"/>
+        <userDefinedPort start="false" port="874"/><!-- port=874 -->
+        <timeout start="true" time="100"/><!-- timeout=100 -->
+        <ssh start="false"/>
+    </rsync>
+    <failLog path="/usr/local/sersync/logs/www_rsync_fail_log.sh" timeToExecute="60"/>
+=============================================================================
+10.配置环境变量&开启同步
+[root@master conf]# echo 'export PATH=$PATH:/usr/local/sersync/bin' >> /etc/profile
+[root@master conf]# sersync -r -d -o /usr/local/sersync/conf/confxml.xml
+======================================================================================
+11.多实例启动
+配置多个confxml.xml配置文件在启动就可以了
