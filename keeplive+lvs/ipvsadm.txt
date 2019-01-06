@@ -1,0 +1,47 @@
+1.下载软件包
+	[root@master soft]#  wget http://www.linuxvirtualserver.org/software/kernel-2.6/ipvsadm-1.24.tar.gz
+2.安装需要扩展
+	[root@master soft]# lsmod | grep ip_vs  [查看是否安装之前如果没有说明之前没有安装]
+	[root@master soft]# uname -r [查看系统的内核版本]
+		2.6.18-194.el5
+	[root@master soft]# yum install kernel-devel -y  [安装扩展为下步做打算]
+	[root@master ipvsadm-1.24]# ln -s /usr/src/kernels/2.6.18-194.el5-i686/ /usr/src/linux  [蒋内核文件链接到对应目录]
+3.安装ipvadm
+	[root@master soft]# tar -xf ipvsadm-1.24.tar.gz   [解压]
+	[root@master ipvsadm-1.24]# make  [编译]
+	[root@master ipvsadm-1.24]# make install [安装]
+4.加载到内核模块
+	[root@master ipvsadm-1.24]# /sbin/ipvsadm
+	[root@master ipvsadm-1.24]# lsmod | grep ip_vs
+	ip_vs                  78081  0 
+5.添加vip[调度器上面]
+	[root@master ipvsadm-1.24]# ifconfig eth0:0 192.168.132.181 netmask 255.255.255.0 up
+	[root@master ipvsadm-1.24]# ifconfig eth0:0
+		eth0:0   Link encap:Ethernet  HWaddr 00:0C:29:EB:18:28  
+				   inet addr:192.168.132.181  Bcast:192.168.132.255  Mask:255.255.255.0
+				UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+6.调度器上面添加真实服务器
+	[root@master ipvsadm-1.24]# ipvsadm -C [清除所有]
+	[root@master ipvsadm-1.24]# ipvsadm --set 30 5 60 [设置回话时间]
+	[root@master ipvsadm-1.24]# ipvsadm -A -t 192.168.132.181:80 -s wrr -p 20 [调度器使用算法]
+	[root@master ipvsadm-1.24]# ipvsadm -a -t 192.168.132.181:80 -r 192.168.132.133:80 -g -w 1 [添加真实服务器]
+	[root@master ipvsadm-1.24]# ipvsadm -a -t 192.168.132.181:80 -r 192.168.132.134:80 -g -w 1  [添加真实服务器]
+7.查看
+	[root@master ipvsadm-1.24]# ipvsadm -L -n
+	IP Virtual Server version 1.2.1 (size=4096)
+	Prot LocalAddress:Port Scheduler Flags
+		-> RemoteAddress:Port           Forward Weight ActiveConn InActConn
+	TCP  192.168.132.181:80 wrr persistent 20
+		-> 192.168.132.134:80           Route   1      0          0         
+		-> 192.168.132.133:80           Route   1      0          0 
+8.真实服务器上面添加访问vip[本地回环接口添加]
+	[root@slave1 ~]# ifconfig lo:181  192.168.132.181 netmask 255.255.255.255 up [在192.168.132.133上面]
+	[root@slave1 ~]# ifconfig lo:181  192.168.132.181 netmask 255.255.255.255 up [在192.168.132.134上面]
+9.两台真实服务器抑制arp
+	[root@slave1 ~]# echo "1" > /proc/sys/net/ipv4/conf/lo/arp_ignore 
+	[root@slave1 ~]# echo "2" > /proc/sys/net/ipv4/conf/lo/arp_announce 
+	[root@slave1 ~]# echo "1" > /proc/sys/net/ipv4/conf/all/arp_ignore 
+	[root@slave1 ~]# echo "2" > /proc/sys/net/ipv4/conf/all/arp_announce 
+	
+	
+	
