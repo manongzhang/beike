@@ -1,0 +1,5 @@
+[redis软件下载]
+https://www.cnblogs.com/peteremperor/p/6635767.html[连接网址]
+https://github.com/MicrosoftArchive/redis/releases [下载地址]
+[php-redis扩展下载]
+https://segmentfault.com/a/1190000011725819
