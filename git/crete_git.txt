@@ -1,0 +1,20 @@
+参考网址:https://www.cnblogs.com/dee0912/p/5815267.html
+1.安装git
+[root@localhost home]# yum install -y git
+2.创建git用户和密码
+	[root@localhost home]# useradd git
+	[root@localhost home]# passwd git
+3.搭建git服务器
+	[root@localhost home]# mkdir -p data/git/gittest.git
+	[root@localhost home]# git init --bare data/git/gittest.git
+	Initialized empty Git repository in /home/data/git/gittest.git/
+	[root@localhost home]# cd data/git/
+	[root@localhost git]# chown -R git:git gittest.git/
+=================================================================
+客户端生成.ssh的公钥和私钥不在叙述
+4.客户端公钥放在服务端git用户下.ssh下的authorized_keys文件里面,如果没有文件或者目录自行创建
+5.修改.ssh目录权限为700  authorized_keys 文件权限为600
+	[root@localhost git]# chmod 700 .ssh
+	[root@localhost git]# cd .ssh
+	[root@localhost .ssh]# chmod 600 authorized_keys
+	
