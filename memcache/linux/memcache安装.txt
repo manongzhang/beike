@@ -1,0 +1,20 @@
+下载路径
+http://memcached.org/files/memcached-1.5.11.tar.gz   [memcache软件]
+libevent-2.1.8-stable.tar.gz [扩展软件]
+memcache-2.2.1.tgz [扩展PHP]
+================================================================================
+
+[root@master libevent-2.1.8-stable]# tar -xvf libevent-2.1.8-stable.tar.gz 
+[root@master libevent-2.1.8-stable]# ./configure --with-libevent=/usr/local/libevent/
+[root@master libevent-2.1.8-stable]# make && make install
+======================================================================================
+memcache安装
+[root@master soft]# tar -xvf memcached-1.5.11.tar.gz 
+[root@master memcached-1.5.11]# ./configure --with-libevent=/usr/local/libevent/ --prefix=/usr/local/memcached/
+[root@master memcached-1.5.11]# make && make install
+======================================================================================
+启动:
+	/usr/local/memcached/bin/memcached -u nobody -m 64 -p 11211 -d
+========================================================================================
+安装php扩展[https://github.com/php-memcached-dev/php-memcached] 网站地址
+

@@ -5,8 +5,8 @@
 	[root@localhost home]# useradd git
 	[root@localhost home]# passwd git
 3.搭建git服务器
-	[root@localhost home]# mkdir -p data/git/gittest.git
-	[root@localhost home]# git init --bare data/git/gittest.git
+	[root@localhost home]# mkdir -p /gittest/gittest.git
+	[root@localhost home]# git init --bare /gittest/gittest.git
 	Initialized empty Git repository in /home/data/git/gittest.git/
 	[root@localhost home]# cd data/git/
 	[root@localhost git]# chown -R git:git gittest.git/
@@ -17,4 +17,7 @@
 	[root@localhost git]# chmod 700 .ssh
 	[root@localhost git]# cd .ssh
 	[root@localhost .ssh]# chmod 600 authorized_keys
+====================================================================
+使用:
+	将项目通过git上传服务器
 	
