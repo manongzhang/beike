@@ -1,0 +1,74 @@
+1.下载软件包
+[前戏]
+	1.altas[下载]
+		连接地址[wget https://github.com/Qihoo360/Atlas/archive/2.2.1.tar.gz]
+	2.glib[下载]
+		链接地址[wget http://ftp.acc.umu.se/pub/gnome/sources/glib/2.33/glib-2.33.6.tar.xz]
+	3.jemalloc[下载]
+		链接地址[wget https://src.fedoraproject.org/lookaside/pkgs/jemalloc/jemalloc-3.1.0.tar.bz2]
+2.辅助软件包
+	 [root@localhost ~]# yum install -y libevent-devel lua-devel openssl-devel flex mysql-devel
+	 [root@localhost ~]#  yum install -y xz gettext-devel
+	 yum -y install libffi*
+==========================================================================================================
+1.安装glib [主master上面]
+	[root@localhost atlas]# xz -d glib-2.33.6.tar.xz
+	[root@localhost atlas]# tar xvf glib-2.33.6.tar 
+	[root@localhost atlas]# cd glib-2.33.6
+	[root@localhost glib-2.33.6]# ./configure 
+	[root@localhost glib-2.33.6]# make -j 8
+	[root@localhost glib-2.33.6]# make install
+	[root@localhost glib-2.33.6]# ldconfig
+2.安装jemalloc
+	[root@localhost atlas]# bzip2 -d jemalloc-3.1.0.tar.bz2 
+	[root@localhost atlas]# tar -xf jemalloc-3.1.0.tar 
+	[root@localhost jemalloc-3.1.0]# ./configure 
+	[root@localhost jemalloc-3.1.0]# make -j 8
+	[root@localhost jemalloc-3.1.0]# make install
+	[root@localhost jemalloc-3.1.0]# cp /soft/atlas/jemalloc-3.1.0/lib/libjemalloc.so.1 /usr/local/lib/
+	[root@localhost jemalloc-3.1.0]# ldconfig
+	[root@localhost jemalloc-3.1.0]# /bin/cp -rf /etc/ld.so.conf /etc/ld.so.conf.`date +%y%m%d%H%M%S`
+	[root@localhost jemalloc-3.1.0]# echo '/usr/local/lib' >> /etc/ld.so.conf
+	[root@localhost jemalloc-3.1.0]# echo '/usr/local/lib64' >> /etc/ld.so.conf
+	[root@localhost jemalloc-3.1.0]# ldconfig
+==============================================================================================================
+3.安装atlas
+	[root@localhost atlas]# tar -xvf 2.2.1.tar.gz 
+	[root@localhost Atlas-2.2.1]# ./bootstrap.sh 
+	[root@localhost Atlas-2.2.1]# make && make install
+4.写配置文件
+	已经写完
+5.授权
+	在主master上面[192.168.206.132]
+		mysql> grant all privileges on *.* to dbproxy_athena_w@"%" identified by "123456";
+	在slave上面授权相同[192.168.206.133][192.168.206.137]
+		mysql> grant all privileges on *.* to dbproxy_athena_w@"%" identified by "123456";
+6.启动dbproxy
+	[root@localhost conf]# /usr/local/mysql-proxy/bin/mysql-proxyd dbproxy start
+	OK: MySQL-Proxy of dbproxy is started
+7.备注:在测试时候
+	注意1
+		admin-username = admin [atlas后台管理用户名]
+		admin-password = 11111   [atlas后台管理密码]
+		admin-address = 0.0.0.0:2345[atlas后台管理接口]
+		proxy-backend-addresses = 192.168.206.132:3306[atlas写数据库master]
+		proxy-read-only-backend-addresses = 192.168.206.133:3306,192.168.206.137:3306 [atlas从数据库slave]
+		pwds = dbproxy_athena_w: /iZxz+0GRoA=,dbproxy_athena_r:/iZxz+0GRoA=[密码123456]
+		daemon = true
+		keepalive = true
+		event-threads = 4
+		log-level = message
+		log-path = /home/mysql/dbproxy/log
+		sql-log = ON
+		sql-log-slow = 10
+		wait-timeout = 10
+		proxy-address = 0.0.0.0:1234
+		charset = utf8
+		client-ips = 127.0.0.1,192.168.206.132
+	注意2
+		如果要进入atlas后台管理使用  mysql -h 127.0.0.1 -u admin -p 11111 -P 2345
+	注意3：如果是工作接口给代码提供的
+		mysql -h 192.168.206.132 -u dbproxy_athena_w -P 1234 -p 
+		密码就是123456
+	注意4一定要管理防火墙
+	

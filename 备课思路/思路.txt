@@ -1,0 +1,220 @@
+第一天:[https://www.cnblogs.com/myon/p/6242921.html]
+	linux服务器基本使用
+		文件操作
+			ls,touch,cat,head,cat,rm,find,more,tar,gzip,ln
+		文件基本权限|软连接
+			r	w	x 
+			4   2   1
+		赋权操作
+			chown
+			chmod
+		目录操作
+			mkdir,rm -rf
+		进程端口操作
+			ps kill,netstat,
+	linux服务器优化分析
+	sed 
+	grep 
+	awk
+	cut
+	wc
+	sort
+问题:
+	1.通过access.log查看访问网站次数最多的前10名IP地址
+	2.统计访问页面前10的url页面
+服务器监控指标
+	监控指标【uptime检查】
+		 18:25:11 up 1 day, 20:27,  1 user,  load average: 0.01, 0.02, 0.05
+		 1.当前时间 04:03:58
+		 2.系统已运行的时间 10 days, 13:19
+		 3.当前在线用户 1 user
+		 4.平均负载：0.01, 0.02, 0.05，最近1分钟、5分钟、15分钟系统的负载
+	【cpu占比】
+			[root@iz2zefwlhq937bc2wfpp1oz ~]# top | grep Cpu
+			%Cpu(s):  0.0 us,  6.2 sy,  0.0 ni, 93.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+			%Cpu(s):  0.3 us,  0.0 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+			%Cpu(s):  0.3 us,  0.3 sy,  0.0 ni, 99.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+			%Cpu(s):  0.0 us,  0.3 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+			%Cpu(s):  0.3 us,  0.3 sy,  0.0 ni, 99.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+			%Cpu(s):  0.7 us,  0.3 sy,  0.0 ni, 99.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+			us:表示cpu执行用户进程所占用时间，越多越好
+			sy:cpu在加载内核上面所调度时间
+			ni:系统在调度进程过程中花费的时间
+			id:cpu的空闲时间越多越不好
+			wa:cpu在等待io操作花费的时间
+	【磁盘占用空间】
+	【目录所占用空间】
+	【网络监控】
+	【磁盘IO】
+	
+作业：
+	1.使用shell脚本统计个个服务器每分钟信息
+	2.使用shell脚本对访问日志切片
+	3.使用sehll脚本安装nginx,php,mysql
+============================================================
+第二
+	nginx 配置文件讲解
+	nginx location匹配规则
+	nginx反向代理搭建
+	文件系统nfs+nsync
+	作业：部署之前的pc项目+配合nginx的反向代理
+============================================================
+第三天:
+优化[前台优化]
+	SEO优化
+	伪静态
+		重写[rewrite]
+	真静态
+		ob缓存
+	配合使用:
+		
+作业:完成之前项目首页实现真静态之前pc网站
+============================================================
+第四天:[可以考虑不讲解]
+简单算法
+	桶排序
+	冒泡排序
+	快速排序
+	卢瑟福环
+	菲波那切数列数列
+		<?php 
+			$arr[1] = 1;
+			for($i = 2;$i < 100;$i++)
+			{
+				$arr[$i] = $arr[$i-1] + $arr[$i-2];
+			}
+			echo join(",",$arr);//将数组合并为一个字符串输出
+		?>
+作业:暂定
+============================================================
+第五天:
+	mysql数据库
+	字段
+		字符串
+		整形
+	表
+		表操作
+		垂直分表
+		水平分表
+		表锁
+		行锁
+		文件锁
+	存储引擎
+		Innodb
+		myisam
+	优化
+		索引
+			索引类型
+			查看mysql索引使用情况
+	sql表连接
+		inner join
+		left join
+		right join
+作业：写原生sql明天查看
+============================================================
+第六天:
+	sql语句练习
+作业:学生来讲解sql语句+大部分自己讲解
+============================================================
+第五天:mysql事物
+	mysql事物的使用
+		事物的隔离级别
+	mysql视图
+	mysql存储过程
+作业:使用存储过程模式上千万数据
+============================================================
+第七天:mysql日志
+	配置文件
+		general-log=ON
+		general-log-file=/usr/local/mysql/data/localhost_genarel.log
+	查询日志
+		show variables like "%general_log%";
+		+------------------+-------------------------------------+
+		| Variable_name    | Value                               |
+		+------------------+-------------------------------------+
+		| general_log      | OFF                                 |
+		| general_log_file | /usr/local/mysql/data/localhost.log |
+		+------------------+-------------------------------------+
+		mysql> set global general_log=ON;
+		mysql> show variables like "%general_log%";
+		+------------------+-------------------------------------+
+		| Variable_name    | Value                               |
+		+------------------+-------------------------------------+
+		| general_log      | ON                                  |
+		| general_log_file | /usr/local/mysql/data/localhost.log |
+		+------------------+-------------------------------------+
+	慢查询日志[配置文件]
+		long_query_time=1
+		log_slow_queries=/usr/local/mysql/data/slow.log
+		mysql> show variables like "%query%";
+		+------------------------------+--------------------------------+
+		| Variable_name                | Value                          |
+		+------------------------------+--------------------------------+
+		| ft_query_expansion_limit     | 20                             |
+		| have_query_cache             | YES                            |
+		| long_query_time              | 1.000000                       |
+		| query_alloc_block_size       | 8192                           |
+		| query_cache_limit            | 1048576                        |
+		| query_cache_min_res_unit     | 4096                           |
+		| query_cache_size             | 0                              |
+		| query_cache_type             | ON                             |
+		| query_cache_wlock_invalidate | OFF                            |
+		| query_prealloc_size          | 8192                           |
+		| slow_query_log               | ON                             |
+		| slow_query_log_file          | /usr/local/mysql/data/slow.log |
+		+------------------------------+--------------------------------+
+	二进制日志
+		server_id=100
+		log-bin=mysql_bin
+		查看:
+			show binlog events;[只查看binlog文件内容]
+			show binlog events in 'mysql_bin.000001'; [制定文件内容]
+			show binary logs;[binlog文件列表]
+	数据恢复
+		到时候在演示
+==============================================================
+第八天:
+	mysql数据库主从搭建 || 主主搭建
+	mysql+keepalived
+	
+	将上月pc项目数据库使用mysql主从分离
+	数据库中间件athlas
+===============================================================
+第九天：keepalived+nginx反向代理
+		lvs+keepalived做负载均衡
+		session && cookie 问题
+===============================================================
+第十天:
+	设计模式
+	单利模式
+	工厂模式
+		类自动加载
+		autoload
+		sp_register_autolaod()
+		命名空间[namespace]
+	观察者模式
+		已经实现场景
+	依赖注入
+		类的依赖关系
+	php反射
+	装饰者模式
+	
+作业:
+	暂定:使用各种设计模式封装一个mvc加上使用composer
+	完成一个企业站:5天时间
+	企业站使用的框架必须是自己搭建的。使用的环境架构也必须是自己搭建的
+===============================================================
+swoole
+	演示swoole使用+websocket
+		数据处理
+		做语音聊天室
+		异步任务
+		HttpWerver
+		携程
+	完成:实时聊天项目
+===============================================================
+
+
+
+		
+	

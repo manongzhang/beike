@@ -3,7 +3,6 @@
 		public function __construct($arr){
 		
 		}
-
 		public function route(){
 			$url = $_SERVER['REQUEST_URI'];
 			$url = trim($url,"/");

@@ -29,7 +29,7 @@
       public static function reslove($name){
 	      if(static::$register[$name]) {
 	     	$name = static::$register[$name]; 
-		return $name();
+			return $name();
 	      } 
       }
    }

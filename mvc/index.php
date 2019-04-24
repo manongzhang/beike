@@ -14,28 +14,3 @@
 // $fastobj = new Fastphp($arr);
 // $fastobj->run();
 
-
-// $str="abcedf";
-// echo strrev($str);
-
-// $str="abcedf";
-// $newArray = array();
-// $len = strlen($str);
-// for($i=$len-1;$i>=0;$i--){
-// 	$newArray[]=$str[$i];
-// }
-
-
-$str="abcedf";
-function tree($str,$len){
-	$len=$len-1;
-	if($str[$len] == ""){
-		return false;
-	}else{
-		echo $str[$len];
-		tree($str,$len);
-	}
-}
-
-$len = strlen($str);
-tree($str,$len);

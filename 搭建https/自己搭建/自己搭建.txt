@@ -1,0 +1,52 @@
+与环境:
+确认安装对应得扩展
+预检查:
+[root@iz2zefwlhq937bc2wfpp1oz nginx-1.8.1]# ./configure --prefix=/tmp/nginx --with-http_ssl_module --without-http_gzip_module --with-http_stub_status_module 
+
+编译&&安装
+[root@iz2zefwlhq937bc2wfpp1oz nginx-1.8.1]# make && make install
+==============================================================================================================================================================
+证书和私钥的生成
+1.生成目录
+[root@iz2zefwlhq937bc2wfpp1oz conf]# mkdir ssl
+(1)创建服务器证书密钥文件 server.key：
+	[root@iz2zefwlhq937bc2wfpp1oz ssl]# openssl genrsa -des3 -out server.key 1024
+(2)创建服务器证书的申请文件 server.csr
+	[root@iz2zefwlhq937bc2wfpp1oz ssl]# openssl req -new -key server.key -out server.csr
+	Enter pass phrase for server.key:
+	You are about to be asked to enter information that will be incorporated
+	into your certificate request.
+	What you are about to enter is what is called a Distinguished Name or a DN.
+	There are quite a few fields but you can leave some blank
+	For some fields there will be a default value,
+	If you enter '.', the field will be left blank.
+	-----
+	Country Name (2 letter code) [XX]:CN
+	State or Province Name (full name) []:beijing
+	Locality Name (eg, city) [Default City]:beijing
+	Organization Name (eg, company) [Default Company Ltd]:test
+	Organizational Unit Name (eg, section) []:
+	Common Name (eg, your name or your server's hostname) []:
+	Email Address []:718594493@qq.com
+
+	Please enter the following 'extra' attributes
+	to be sent with your certificate request
+	A challenge password []:
+	An optional company name []:
+	You have new mail in /var/spool/mail/root
+(3)备份一份服务器密钥文件
+	[root@iz2zefwlhq937bc2wfpp1oz ssl]# cp server.key server.key.org
+(4)去除文件口令
+	[root@iz2zefwlhq937bc2wfpp1oz ssl]# openssl rsa -in server.key.org -out server.key
+(5) 生成证书文件server.crt
+	[root@iz2zefwlhq937bc2wfpp1oz ssl]# openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+==============================================================================================================================================================
+修改nginx的配置文件
+		#listen       80;
+        listen 443 default ssl;
+        ssl on; 
+        server_name  localhost;
+        #公钥
+        ssl_certificate     ssl/server.crt;
+        #私钥
+        ssl_certificate_key ssl/server.key;

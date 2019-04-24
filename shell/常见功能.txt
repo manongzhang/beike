@@ -1,0 +1,108 @@
+1.通过access.log查看访问网站次数最多的前10名IP地址
+[root@iz2zefwlhq937bc2wfpp1oz logs]# cat access.log |cut -f1 -d " " | sort | uniq -c | sort -k1 -n -r | head -10
+    604 124.64.17.118
+    102 223.104.213.31
+     77 221.218.213.143
+     42 123.112.21.103
+     41 223.111.137.153
+     40 123.112.20.57
+     37 114.242.250.236
+     35 124.64.18.9
+     22 80.82.70.187
+     18 193.232.106.88
+2.统计访问页面前10的url页面
+	[root@iz2zefwlhq937bc2wfpp1oz logs]# cat access.log |cut -f7 -d " " | sort | uniq -c | sort -k1 -r -n | head -10
+    294 /
+    253 /favicon.ico
+    133 /showlist
+     96 /test
+     28 400
+     22 http://www.baidu.com/cache/global/img/gs.gif
+     13 /show
+     13 /add
+     11 /js/public.js
+     11 /js/jquery.min.js
+=======================================================================================================================
+监控指标【uptime检查】
+[root@iz2zefwlhq937bc2wfpp1oz logs]# uptime
+ 21:03:06 up 36 days, 11:27,  1 user,  load average: 0.00, 0.01, 0.05
+ 表示在过去的1分钟 5分钟 15分钟
+【cpu占比】
+[root@iz2zefwlhq937bc2wfpp1oz ~]# top | grep Cpu
+%Cpu(s):  0.0 us,  6.2 sy,  0.0 ni, 93.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+%Cpu(s):  0.3 us,  0.0 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+%Cpu(s):  0.3 us,  0.3 sy,  0.0 ni, 99.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+%Cpu(s):  0.0 us,  0.3 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+%Cpu(s):  0.3 us,  0.3 sy,  0.0 ni, 99.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+%Cpu(s):  0.7 us,  0.3 sy,  0.0 ni, 99.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+us:表示cpu执行用户进程所占用时间，越多越好
+sy:cpu在加载内核上面所调度时间
+ni:系统在调度进程过程中花费的时间
+id:cpu的空闲时间越多越不好
+wa:cpu在等待io操作花费的时间
+=======================================================================================================================
+磁盘占用空间
+[root@iz2zefwlhq937bc2wfpp1oz ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        40G   16G   22G  43% /
+devtmpfs        909M     0  909M   0% /dev
+tmpfs           920M     0  920M   0% /dev/shm
+tmpfs           920M  660K  919M   1% /run
+tmpfs           920M     0  920M   0% /sys/fs/cgroup
+tmpfs           184M     0  184M   0% /run/user/0
+=======================================================================================================================
+目录所占用空间
+[root@iz2zefwlhq937bc2wfpp1oz /]# du -d 1 -h /
+[root@iz2zefwlhq937bc2wfpp1oz /]# du -d 1 -h / | more
+8.0K    /www
+52K     /php
+0       /sys
+0       /dev
+24K     /pythonsoft
+44K     /tmp
+374M    /root
+76K     /dockernginx
+12K     /shell
+16K     /opt
+4.0K    /media
+217M    /python
+11M     /shop
+=================================================================================
+安装:yum install sysstat
+网络监控
+[root@iz2zefwlhq937bc2wfpp1oz /]# sar -n DEV 1 3 -n:汇报所有网卡情况 DEV：所有设备  1 每一秒抽样 3：抽取三次
+Linux 3.10.0-957.1.3.el7.x86_64 (iz2zefwlhq937bc2wfpp1oz)       04/06/2019      _x86_64_        (1 CPU)
+
+09:22:03 PM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
+09:22:04 PM      eth0      5.05      4.04      0.55      0.43      0.00      0.00      0.00
+09:22:04 PM        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+
+09:22:04 PM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
+09:22:05 PM      eth0      0.98      0.98      0.06      0.06      0.00      0.00      0.00
+09:22:05 PM        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+
+09:22:05 PM     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
+09:22:06 PM      eth0      1.01      1.01      0.06      0.37      0.00      0.00      0.00
+09:22:06 PM        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+
+Average:        IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
+Average:         eth0      2.33      2.00      0.22      0.29      0.00      0.00      0.00
+Average:           lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+rxpck:接受数据
+txpck:发送的数据
+rxkB:接受字节数
+txkB:发送字节数
+rxcmp:接受压缩包数据
+txcmp:发送压缩包数据
+rxmcst:接收广播包数量
+=================================================================================
+磁盘IO
+[root@iz2zefwlhq937bc2wfpp1oz /]# iostat -d -k  -d:查看磁盘io情况  -k字节数显示
+Linux 3.10.0-957.1.3.el7.x86_64 (iz2zefwlhq937bc2wfpp1oz)       04/06/2019      _x86_64_        (1 CPU)
+
+Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+vda               0.97         0.86        34.93    2704169  109940020
+tps:表示每秒处理io总数别的都是读写
+=================================================================================
+
+

@@ -1,0 +1,31 @@
+1.nginx配置虚拟主机
+	server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        access_log  logs/host.access.log  main;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+	}
+2.nginx配置反向代理
+	upstream模块
+	轮询
+	权重
+	ip_hash
+	down
+	backup
+3.nginx配置httpGzip压缩
+4.nginx配置规则url匹配
+	匹配级别
+		精准匹配:=
+		正则匹配:~
+		默认匹配:/
+	
+	防盗链
+5.nginx的启动，关闭和平滑启动,检查配置文件正确情况
+6.nginx优化配置参数

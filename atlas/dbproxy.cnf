@@ -1,0 +1,19 @@
+[mysql-proxy]
+admin-username = user
+admin-password = pwd
+admin-address = 0.0.0.0:2345
+proxy-backend-addresses = 192.168.206.132:5858
+proxy-read-only-backend-addresses = 192.168.206.133:5858,192.168.206.137:5858
+pwds = dbproxy_athena_w: /iZxz+0GRoA=,dbproxy_athena_r:/iZxz+0GRoA=
+daemon = true
+keepalive = true
+event-threads = 4
+log-level = message
+log-path = /home/mysql/dbproxy/log
+sql-log = ON
+sql-log-slow = 10
+wait-timeout = 10
+proxy-address = 0.0.0.0:12340
+charset = utf8
+client-ips = 127.0.0.1
+

@@ -1,0 +1,18 @@
+[master]
+	grant all privileges on *.* to zhang@"%" identified by "123456";
+	mysql> show master status;
+	+------------------+----------+--------------+------------------+
+	| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
+	+------------------+----------+--------------+------------------+
+	| mysql_bin.000014 |      320 |              |                  |
+	+------------------+----------+--------------+------------------+
+	1 row in set (0.00 sec)
+[slave]
+	mysql> change master to master_host="192.168.206.132",
+			master_user="zhang",
+			master_password="123456",
+			master_port=3306,
+			master_log_file="mysql_bin.000001",
+			master_log_pos=107; 
+[另外一个同理]
+			
