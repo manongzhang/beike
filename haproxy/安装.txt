@@ -1,0 +1,7 @@
+参考网址[https://blog.csdn.net/qq_28710983/article/details/82194404]
+[root@localhost haproxy]# yum install -y gcc*
+[root@localhost haproxy]# tar -xvf haproxy-1.8.10.tar.gz 
+[root@localhost haproxy-1.8.10]# make TARGET=linux2628 ARCH=x86_64 PREFIX=/usr/local/haproxy
+[root@localhost haproxy-1.8.10]# make install PREFIX=/usr/local/haproxy
+[root@localhost haproxy]# mkdir etc
+[root@localhost examples]# cp option-http_proxy.cfg /usr/local/haproxy/etc/haproxy.cfg

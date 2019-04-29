@@ -1,0 +1,14 @@
+1.显示系统上面的路由表信息
+	[root@localhost ~]# route -n
+	Kernel IP routing table
+	Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+	0.0.0.0         192.168.1.1     0.0.0.0         UG    0      0        0 ens37
+	169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 ens33
+	169.254.0.0     0.0.0.0         255.255.0.0     U     1003   0        0 ens37
+	192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 ens37
+	192.168.206.0   0.0.0.0         255.255.255.0   U     0      0        0 ens33
+2.删除默认路由
+	[root@localhost network-scripts]# ip route del default
+3.添加默认路由
+	[root@localhost network-scripts]# route add default gw 192.168.206.2 ens33
+4.

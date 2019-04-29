@@ -1,0 +1,66 @@
+#前戏
+[root@iz2zefwlhq937bc2wfpp1oz cmake-2.8.8]# ./configure  #预编译
+[root@iz2zefwlhq937bc2wfpp1oz cmake-2.8.8]# gmake && gmake install  #编译 && 安装
+[root@iz2zefwlhq937bc2wfpp1oz cmake-2.8.8]# yum install ncurses-devel -y  #mysql的依赖包
+======================================================================================
+正题
+1.创建mysql用户组
+[root@iz2zefwlhq937bc2wfpp1oz cmake-2.8.8]# groupadd mysql
+2.创建用户
+[root@iz2zefwlhq937bc2wfpp1oz cmake-2.8.8]# useradd mysql -s /sbin/nologin -M -g mysql
+3.创建目录并授权
+[root@iz2zefwlhq937bc2wfpp1oz cmake-2.8.8]# mkdir /usr/local/mysql
+4.授权
+[root@iz2zefwlhq937bc2wfpp1oz local]# chown -R mysql.mysql /usr/local/mysql/
+=======================================================================================
+1.解压
+[root@iz2zefwlhq937bc2wfpp1oz soft]# tar -xvf mysql-5.5.32.tar.gz
+
+2.编译安装
+[root@iz2zefwlhq937bc2wfpp1oz soft]# cd mysql-5.5.32
+cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+-DMYSQL_DATADIR=/usr/local/mysql/data \
+-DMYSQL_UNIX_ADDR=/usr/local/mysql/mysql.sock \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DEXTRA_CHARSETS=gbk,gb2312,utf8,ascii \
+-DENABLED_LOCAL_INFILE=ON \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_FEDERATED_STORAGE_ENGINE=1 \
+-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+-DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
+-DWITHOUT_PARTITION_STORAGE_ENGINE=1 \
+-DWITH_FAST_MUTEXES=1 \
+-DWITH_ZLIB=bundled \
+-DENABLED_LOCAL_INFILE=1 \
+-DWITH_READLINE=1 \
+-DWITH_EMBEDDED_SERVER=1 \
+-DWITH_DEBUG=0
+//编译&& 安装
+[root@iz2zefwlhq937bc2wfpp1oz mysql-5.5.32]# make && make install
+=======================================================================================
+初始化
+
+1.选择配置文件
+[root@iz2zefwlhq937bc2wfpp1oz mysql-5.5.32]# cp support-files/my-small.cnf /etc/my.cnf
+
+2.配置环境变量
+[root@iz2zefwlhq937bc2wfpp1oz mysql-5.5.32]# echo 'export PATH=/usr/local/mysql/bin:$PATH' >> /etc/profile
+
+6.初始化数据库
+cd /usr/local/mysql/scripts
+./mysql_install_db --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --user=mysql //2个ok成功
+
+7.复制服务端启动
+[root@iz2zefwlhq937bc2wfpp1oz scripts]# cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
+
+chmod +x /etc/init.d/mysqld
+
+8.启动
+/etc/init.d/mysqld start
+
+9. mysql添加密码
+/usr/local/mysql/bin/mysqladmin -u root password '123456';
+
+10.开机启动项
+chkconfig mysqld on

@@ -14,19 +14,8 @@ wget http://download.redis.io/releases/redis-2.8.3.tar.gz [已存在]
 [root@master ~]# vim /usr/local/redis/redis.conf
 daemonize yes  #修改为yes
 ======================================================================================================
-安装扩展
-[root@master soft]# tar -xvf phpredis-2.1.1-1.tar.gz
-[root@master owlient-phpredis-90ecd17]# /usr/local/php/bin/phpize
-[root@master owlient-phpredis-90ecd17]# ./configure --with-php-config=/usr/local/php/bin/php-config
-[root@master owlient-phpredis-90ecd17]# make && make install
-======================================================================================================
-遇到问题:
-解决思路:[https://blog.csdn.net/yangli91628/article/details/50393678]
-make[1]: Entering directory `/soft/redis-2.8.3/src'
-    LINK redis-server
-zmalloc.o: In function `zmalloc_used_memory':
-/soft/redis-2.8.3/src/zmalloc.c:223: undefined reference to `__sync_add_and_fetch_4'
-collect2: ld 返回 1
-make[1]: *** [redis-server] 错误 1
-make[1]: Leaving directory `/soft/redis-2.8.3/src'
-make: *** [all] 错误 2
+安装扩展[php-7.2.13]
+[root@localhost phpredis]# ./configure --with-php-config=/usr/local/php7/bin/php-config 
+[root@localhost phpredis]# make
+[root@localhost phpredis]# make install
+接下来配置php的配置文件

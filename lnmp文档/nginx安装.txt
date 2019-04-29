@@ -1,0 +1,43 @@
+1.更新gcc   yum install gcc*    y安装         
+
+2.下载   yum install lrzsz -y   用于上传文件和下载文件
+
+3.新建 soft    makdir soft
+
+4.rz  上传   nginx-1.8.1.tar.gz （文件）到soft   （下载 sz）
+
+5.解压nginx-1.8.1.tar.gz    tar -xvf 名字 
+6.进入解压好的目录 cd nginx-1.8.1
+
+7.预编译  ./configure --prefix=/usr/local/nginx   检查是否适合
+
+(1)报错
+./configure: error: the HTTP rewrite module requires the PCRE library.
+You can either disable the module by using --without-http_rewrite_module
+option, or install the PCRE library into the system, or build the PCRE library
+statically from the source with nginx by using --with-pcre=<path> option.
+
+--with-pcre=<path> option.
+
+pcre 下载（没有啥下啥）
+
+yum install pcre*下载  y安装
+
+8.编译    
+
+9.安装    make install
+
+10.启动 nginx    先cd /usr/local/nginx/sbin    然后 ./nginx
+
+11.查看进程  ps aux | grep nginx
+
+12.关闭nginx  /usr/local/nginx/sbin/nginx -s stop
+
+13.删除  rm -rf /usr/local/nginx
+
+！！！！！
+14.如果没有停止nginx,重启 reboot(!僵尸进程)重启服务器 不要操作
+
+
+
+

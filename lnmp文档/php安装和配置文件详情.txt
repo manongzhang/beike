@@ -1,0 +1,183 @@
+1.把php-7.2.13.tar.gz 从tmp（php-7.2.13.tar.gz所在的目录）移动到soft 
+      
+  mv php-7.2.13.tar.gz /soft
+
+2.解压php-7.2.13.tar.gz   tar -xvf php-7.2.13.tar.gz
+
+3.进到php-7.2.13
+  粘贴  安装依赖扩展
+  yum install -y make cmake gcc gcc-c++ autoconf automake libpng-devel libjpeg-devel zlib libxml2-devel ncurses-devel bison libtool-ltdl-devel libiconv libmcrypt mhash   mcrypt pcre-devel openssl-devel freetype-devel libcurl-devel
+
+4.然后  预编译
+  ./configure --prefix=/usr/local/php7 --with-mysql --with-mysqli --with-pdo_mysql --with-iconv-dir --with-zlib --with-libxml-dir --enable-xml --enable-fpm --enable-mbstring --with-gd --with-openssl --with-mhash --enable-sockets --with-xmlrpc --enable-zip --enable-soap --with-freetype-dir=/usr/lib64
+
+5.编译 make
+
+  如果make: *** [sapi/cli/php] Error 1 打开百度粘贴 https://blog.csdn.net/zhou75771217/article/details/83303199
+  进入 vim Makefile 109行 添加-liconv
+
+
+6.安装 make install 
+
+
+修改php配置
+1.进入cd /usr/local/php7
+
+total 28
+drwxr-xr-x 2 root root 4096 Mar  1 14:17 bin
+drwxr-xr-x 3 root root 4096 Mar  1 14:39 etc
+drwxr-xr-x 3 root root 4096 Mar  1 14:17 include
+drwxr-xr-x 3 root root 4096 Mar  1 14:17 lib
+drwxr-xr-x 4 root root 4096 Mar  1 14:17 php
+drwxr-xr-x 2 root root 4096 Mar  1 14:17 sbin
+drwxr-xr-x 4 root root 4096 Mar  1 14:17 va
+
+
+2.进入etc   etc/
+  
+total 16
+-rw-r--r-- 1 root root 1244 Mar  1 14:17 pear.conf
+-rw-r--r-- 1 root root 4468 Mar  1 14:17 php-fpm.conf.default
+drwxr-xr-x 2 root root 4096 Mar  1 14:17 php-fpm.d
+  
+3.修改php-fpm.conf.default    mv php-fpm.conf.default php-fpm.conf
+  
+4.将php-7.2.13里面的php.ini-development复制到ect命名php.ini     cp /soft/php-7.2.13/php.ini-development
+
+-rw-r--r-- 1 root root  1244 Mar  1 14:17 pear.conf
+-rw-r--r-- 1 root root  4468 Mar  1 14:17 php-fpm.conf
+drwxr-xr-x 2 root root  4096 Mar  1 14:17 php-fpm.d
+-rw-r--r-- 1 root root 70296 Mar  1 15:43 php.ini
+
+5.进入php-fpm.d
+
+total 20
+-rw-r--r-- 1 root root 18872 Mar  1 14:17 www.conf.default
+
+6.将www.conf.default 修改www.conf     mv www.conf.default  www.conf
+
+7.成功查看  ll
+
+total 20
+-rw-r--r-- 1 root root 18872 Mar  1 14:17 www.conf
+
+8.进入php7 cd /usr/local/php7
+
+total 28
+drwxr-xr-x 2 root root 4096 Mar  1 14:17 bin
+drwxr-xr-x 3 root root 4096 Mar  1 14:39 etc
+drwxr-xr-x 3 root root 4096 Mar  1 14:17 include
+drwxr-xr-x 3 root root 4096 Mar  1 14:17 lib
+drwxr-xr-x 4 root root 4096 Mar  1 14:17 php
+drwxr-xr-x 2 root root 4096 Mar  1 14:17 sbin
+drwxr-xr-x 4 root root 4096 Mar  1 14:17 va
+
+9.进入sbin  cd sbin/
+
+total 43692
+-rwxr-xr-x 1 root root 44737448 Mar  1 14:17 php-fpm
+
+10.进入nginx.conf   vim /usr/local/nginx/conf/nginx.conf
+
+
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        location ~ \.php$ {
+           root           html;
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+
+
+11. 重启nginx   /usr/local/nginx/sbin/nginx -s reload
+
+12.检查是否重启 netstat -ant   (9000端口就是成功)
+
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 127.0.0.1:9000          0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 127.0.0.1:32000         0.0.0.0:*               LISTEN     
+tcp        0     52 172.17.14.253:22        124.64.19.20:10519      ESTABLISHED
+tcp       32      0 172.17.14.253:36496     100.100.0.13:3128       CLOSE_WAIT 
+tcp        0      0 127.0.0.1:32000         127.0.0.1:31000         ESTABLISHED
+tcp        0      0 127.0.0.1:31000         127.0.0.1:32000         ESTABLISHED
+tcp        0      0 172.17.14.253:22        124.64.19.20:10518      ESTABLISHED
+tcp        0      0 172.17.14.253:59626     100.100.30.25:80        ESTABLISHED
+
+
+
+
+
+
+
+
+
+
