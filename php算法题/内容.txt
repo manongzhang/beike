@@ -1,4 +1,3 @@
-[https://blog.csdn.net/a519395243/article/details/77942913]
 1、一群猴子排成一圈，按1，2，…，n依次编号。然后从第1只开始数，
 	数到第m只,把它踢出圈，从它后面再开始数，再数到第m只，在把它踢出去…，
 	如此不停的进行下去，直到最后只剩下一只猴子为止，那只猴子就叫做大王。
@@ -36,7 +35,29 @@ function niu($y){
 3、$arr = array(15,3,6,10,7,1);
 请使用,桶排序，冒泡排序，快速排序，安装从大到小排序
 快速排序
-	
+		$arr = array(1,4,9,30,4,60,2);
+	function quickSort($arr){
+		$length = count($arr);
+		if($length <= 1){
+			return $arr;
+		}
+		$base_num = $arr[0];
+		$left_array = array();
+		$right_array = array();
+		for($i=1;$i < $length;$i++){
+			if($base_num < $arr[$i]){
+				$right_array[] = $arr[$i];
+			}else{
+				$left_array[] = $arr[$i];
+			}
+		}
+		$left_array=quickSort($left_array);
+		$right_array=quickSort($right_array);
+
+		return array_merge($left_array,array($base_num),$right_array);
+	}
+	$newarr = quickSort($arr);
+	print_r($newarr);
 =================================================================================================================
 4.$arr = array(1,3,4,5,6,7,10);不允许使用任何内置函数，倒叙
 		$arr = array(1,3,4,5,6,7,10);
@@ -91,4 +112,128 @@ function niu($y){
 		echo "<br />";
 	}
 =================================================================================================================
-10.二分查找算法（折半查找算法）
+10.二分查找算法（折半查找算法）[快速查找]
+ $arr = array(1,3,4,5,6,67,90,100);
+ function quickfind($arr,$value){
+ 	$length = count($arr);
+ 	$hight  = $length-1;
+ 	$lower  = 0;
+ 	while($lower < $hight){
+ 		$middle = intval(($lower+$hight)/2);
+ 		if($arr[$middle] > $value){
+ 			$hight = $middle-1;
+ 		}elseif($arr[$middle] > $value){
+ 			$lower = $middle+1;
+ 		}else{
+ 			return $middle;
+ 		}
+
+ 		return false;
+ 	}
+ }
+$num=5;
+$middle = quickfind($arr,$num);
+echo $middle;
+=================================================================================================================
+11.对应得位置加入数字
+	$arr = array(1,3,6,9,10,20,45);
+	$insert = 7;
+	$length = count($arr);
+	$index=0;
+	for($i=0;$i<$length;$i++){
+		if($arr[$i] < $insert){
+			$index = $i;
+		}
+	}
+	for($i=$length-1;$i>$index;$i--){
+		$newIndex = $i+1;
+		$arr[$newIndex] =$arr[$i]; 
+	}
+	$arr[$index+1]=$insert;
+	print_r($arr);
+=========================================================================================
+12.对应得位置删除数字
+	$arr = array(1,2,3,6,9,10,20,40);
+	$delete = 6;
+	$length = count($arr);
+	$index=0;
+	for($i=0;$i<$length;$i++){
+		if($arr[$i] == $delete){
+			$index = $i;
+			break;
+		}
+	}
+	while($index < $length) {
+		$end = $index+1;
+		$end = $end >= $length ? $length-1 : $end;
+		$arr[$index]=$arr[$end];
+		$index++;
+	}
+	unset($arr[$length-1]);
+	print_r($arr);
+=========================================================================================
+13.递归便利目录
+=========================================================================================
+14.
+	1>11.有个人想上一个n级的台阶，每次只能迈1级或者迈2级台阶，
+		问：这个人有多少种方法可以把台阶走完？例如：总共3级台阶，
+			可以先迈1级再迈2级，或者先迈2级再迈1级，或者迈3次1级总共3中方式
+		function jieti($num){	//实际上是斐波那契数列
+			return $num<2? 1:jieti($num-1)+jieti($num-2);
+		}
+	2>从一个标准的Url提取出文件的扩展名[有多少种办法]
+=========================================================================================
+高级部分
+[https://blog.csdn.net/s1070/article/details/51174725]
+=========================================================================================
+15.使对象可以像数组一样进行foreach循环，要求属性必须是私有。(Iterator模式的PHP5实现，写一类实现Iterator接口)
+	class Test implements Iterator{
+		private $item = array("id"=>1,"name"=>"lisi","age"=>20);
+		private $info = array("name"=>"sdfdsds","age"=>20);
+		public function rewind(){
+			reset($this->info);
+		}
+
+		public function current(){
+        	return current($this->info);
+		}
+
+		public function key(){
+        	return key($this->info);
+		}
+
+		public function next(){
+        	return next($this->info);
+		}
+
+		public function valid(){
+        	return($this->current()!==false);
+		}
+	}
+	$t = new Test();
+	foreach ($t as $key => $value) {
+		echo $key;
+	}
+	二：
+=========================================================================================
+16.用PHP实现一个双向队列
+
+<?php
+    class Deque{
+    private $queue=array();
+    public function addFirst($item){
+        return array_unshift($this->queue,$item);
+    }
+ 
+    public function addLast($item){
+        return array_push($this->queue,$item);
+    }
+    public function removeFirst(){
+        return array_shift($this->queue);
+    }
+ 
+    public function removeLast(){
+        return array_pop($this->queue);
+    }
+}
+=========================================================================================

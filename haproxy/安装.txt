@@ -5,3 +5,62 @@
 [root@localhost haproxy-1.8.10]# make install PREFIX=/usr/local/haproxy
 [root@localhost haproxy]# mkdir etc
 [root@localhost examples]# cp option-http_proxy.cfg /usr/local/haproxy/etc/haproxy.cfg
+=========================================================================================
+配置参数说明:
+global配置
+ 	log：全局的日志配置，local0 是日志设备，info 表示日志级别。其中日志级别有err、warning、info、debug 四种可选。这个配置表示使用 127.0.0.1 上的 rsyslog 服务中的local0 日志设备，记录日志等级为info。
+	maxconn：设定每个 haproxy 进程可接受的最大并发连接数，此选项等同于 Linux命令行选项“ulimit -n”。
+	user/ group：设置运行 haproxy 进程的用户和组，也可使用用户和组的 uid 和gid 值来替代。
+	daemon：设置 HAProxy 进程进入后台运行。这是推荐的运行模式。
+	nbproc：设置 HAProxy 启动时可创建的进程数，此参数要求将HAProxy 运行模式设置为“daemon”，默认只启动一个进程。根据使用经验，该值的设置应该小于服务器的 CPU 核数。创建多个进程，能够减少每个进程的任务队列，但是过多的进程可能会导致进程的崩溃。
+	pidfile：指定 HAProxy 进程的 pid 文件。启动进程的用户必须有访问此文件的权限
+defaults 部分
+	mode：设置 HAProxy 实例默认的运行模式，有 tcp、http、health 三个可选值。
+	tcp 模式  在此模式下，客户端和服务器端之间将建立一个全双工的连接，不会对七层报文做任何类型的检查，默认为 tcp 模式，经常用于 SSL、SSH、SMTP 等应用。
+	http 模式 在此模式下，客户端请求在转发至后端服务器之前将会被深度分析，所有不与 RFC 格式兼容的请求都会被拒绝
+	retries：设置连接后端服务器的失败次数
+	timeout connect：等待后端服务器响应时间
+	timeout client：连接超时
+	timeout server：设置服务器端回应客户度数据发送的最长等待时间，默认单位是毫秒
+	timeout check：设置对后端服务器的检测超时时间，默认单位是毫秒
+frontend 部分
+	bind：此选项只能在 frontend 和 listen 部分进行定义，用于定义一个或几个监听的套接字
+	option httplog
+	option forwardfor
+	option httpclose
+	log global：表示使用全局的日志配置，这里的“ global”表示引用在HAProxy 配置文件 global 部分中定义的 log 选项配置格式
+	default_backend: 指定默认的后端服务器池
+backend 部分
+	option redispatch：此参数用于 cookie 保持的环境中。在默认情况下，HAProxy会将其请求的后端服务器的 serverID 插入到 cookie 中，以保证会话的 SESSION 持久性。而如果后端的服务器出现故障，客户端的 cookie 是不会刷新的，这就出现了问题。此时，如果设置此参数，就会将客户的请求强制定向到另外一个健康的后端服务器上，以保证服务的正常
+	option abortonclose：如果设置了此参数，可以在服务器负载很高的情况下， 自动结束掉当前队列中处理时间比较长的链接
+	balance：此关键字用来定义负载均衡算法
+		roundrobin	是基于权重进行轮询调度的算法，在服务器的性能分布比较均匀的时候，这是一种最公平、最合理的算法。此算法经常使用。
+		static-rr	也是基于权重进行轮询的调度算法，不过此算法为静态方法，在运行时调整其服务器权重不会生效。
+		source	是基于请求源 IP 的算法。此算法先对请求的源 IP 进行 hash 运算， 然后将结果与后端服务器的权重总数相除后转发至某个匹配的后端服务器。这种方式可以使同一个客户端 IP 的请求始终被转发到某特定的后端服务器。
+		leastconn	此算法会将新的连接请求转发到具有最少连接数目的后端服务器。在会话时间较长的场景中推荐使用此算法，例如数据库负载均衡等。此算法不  适合会话较短的环境中，例如基于 HTTP 的应用。
+		uri	此算法会对部分或整个 URI 进行 hash 运算，再经过与服务器的总权重相除，最后转发到某台匹配的后端服务器上。
+		uri_param	此算法会根据 URL 路径中的参数进行转发，这样可保证在后端真实服务器数量不变时，同一个用户的请求始终分发到同一台机器上
+	cookie:表示允许向 cookie 插入 SERVERID，每台服务器的 SERVERID 可在下面的 server 关键字中使用 cookie 关键字定义
+	option httpchk:此选项表示启用 HTTP 的服务状态检测功能
+	server：这个关键字用来定义多个后端真实服务器，不能用于 defaults 和frontend部分。使用格式为：server <name> <address>[:port] [param*] 其中，每个参数含义如下：
+	check：表示启用对此后端服务器执行健康状态检查。
+	inter：设置健康状态检查的时间间隔，单位为毫秒。
+	rise：设置从故障状态转换至正常状态需要成功检查的次数，例如。“rise 2”表示 2 次检查正确就认为此服务器可用。
+	fall：设置后端服务器从正常状态转换为不可用状态需要检查的次数，例如，“fall 3”表示 3 次检查失败就认为此服务器不可用。
+	cookie：为指定的后端服务器设定 cookie 值，此处指定的值将在请求入站时被检查，第一次为此值挑选的后端服务器将在后
+=========================================================================================
+解决session共享的问题
+1、用户 IP 识别
+	haroxy 将用户 IP 经过 hash 计算后 指定到固定的真实服务器上（类似于 nginx 的 IP hash 指令）
+	配置指令： balance source
+	 mode http 
+    option redispatch
+    option abortonclose 
+    balance source 
+    cookie SERVERID
+    option httpchk GET /index.jsp
+    server 237server 192.168.81.237:8080 cookie server1 weight 6 check inter 2000 rise 2 fall 3
+    server iivey234 192.168.81.234:8080 cookie server2 weight 3 check inter 2000 rise 2 fall 3
+2、cookie 识别
+	haproxy 将WEB 服务端发送给客户端的 cookie 中插入(或添加加前缀)haproxy 定义的后端的服务器COOKIE ID。
+	配置指令例举 cookie SESSION_COOKIE insert indirect nocache
