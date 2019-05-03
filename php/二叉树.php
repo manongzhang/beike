@@ -66,6 +66,16 @@ $c->createBinaryTree(NULL,$f);
 // 	}
 // }
 // preOrder($a);
+// $arr_stack = array();
+// while(!empty($arr_stack) || $tree !=null){
+// 	while($tree !=null){
+// 		array_push($arr_stack,$tree);
+// 		$tree=$tree->left;
+// 	}
+// 	$center_node = array_pop($arr_stack);
+// 	echo $center_node->val;
+// 	$tree = $center_node->right;
+// }
 //===============================================================================
 // 后序遍历
 // function preOrder($tree){
@@ -78,22 +88,21 @@ $c->createBinaryTree(NULL,$f);
 // 	echo $tree->val;
 // }
 // preOrder($a);
-array_push($arr_stack,$tree);
-
-while(!empty($arr_stack)){
-	$center_node =array_pop($arr_stack);
-	array_push($visit_stack,$center_node);
-	if($center_node->left != null){
-		array_push($arr_stack,$center_node->left);
-	}
-	if($center_node ->right !=null){
-		array_push($arr_stack,$center_node->right);
-	}
-	print_r($arr_stack);
-	echo "===========================================================";
-}
-while(!empty($visit_stack)){
-	$node = array_pop($visit_stack);
-	echo $node->val;
-}
+// $arr_stack = array();
+// $vist_stack = array();
+// array_push($arr_stack,$tree);
+// while(!empty($arr_stack)){
+// 	$center_node = array_pop($arr_stack);
+// 	array_push($vist_stack,$center_node);
+// 	if($center_node->left !=null){
+// 		array_push($arr_stack,$center_node->left);
+// 	}
+// 	if($center_node->right != null){
+// 		array_push($arr_stack,$center_node->right);
+// 	}
+// }
+// while (!empty($vist_stack)) {
+// 	$info = array_pop($vist_stack);
+// 	echo $info->val;
+// }
 ?>
