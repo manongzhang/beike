@@ -1,24 +1,29 @@
 第一天:[https://www.cnblogs.com/myon/p/6242921.html]
 	linux服务器基本使用
 		文件操作
-			ls,touch,cat,head,cat,rm,find,more,tar,gzip,ln
+			cd ls,touch,cat,head,cat,rm,find,more,tar,gzip,ln pwd,date
 		文件基本权限|软连接
 			r	w	x 
 			4   2   1
 		赋权操作
-			chown
-			chmod
+			chown ===改变文件所属者
+			chmod ====改变文件权限
+========================================================================
+课堂练习;
+	1.请写一个shell文件
+
 		目录操作
 			mkdir,rm -rf
 		进程端口操作
-			ps kill,netstat,
+		ps kill,netstat,lsof,killall
 	linux服务器优化分析
-	sed 
-	grep 
-	awk
-	cut
-	wc
-	sort
+			sed find awk
+	sed  ===帮你修改文件里面的内容   sed "s/2/c/g" 1.txt 
+	grep ===过滤文件里面的内容 cat 2.txt  | grep -E "abc"
+	awk====awk -F " " '{print $1}' 2.txt
+	cut===
+	wc==== cat 2.txt  | wc -l
+	sort=== cat 2.txt | sort -d
 问题:
 	1.通过access.log查看访问网站次数最多的前10名IP地址
 	2.统计访问页面前10的url页面
@@ -50,11 +55,43 @@
 作业：
 	1.使用shell脚本统计个个服务器每分钟信息
 	2.使用shell脚本对访问日志切片
-	3.使用sehll脚本安装nginx,php,mysql
 ============================================================
 第二
 	nginx 配置文件讲解
 	nginx location匹配规则
+		精准匹配:=
+		正则匹配:~
+		默认匹配:/
+	nginx rewrite
+		location /aa {
+			rewrite ^/(.*)$  https://www.baidu.com;
+		}
+	nginx if判断
+		-f 
+		-d 
+		-e 
+	nginx常用变量
+		$args ： #这个变量等于请求行中的参数，同$query_string
+		$content_length ： 请求头中的Content-length字段。
+		$content_type ： 请求头中的Content-Type字段。
+		$document_root ： 当前请求在root指令中指定的值。
+		$host ： 请求主机头字段，否则为服务器名称。
+========$http_user_agent ： 客户端agent信息
+		$http_cookie ： 客户端cookie信息
+		$limit_rate ： 这个变量可以限制连接速率。
+========$request_method ： 客户端请求的动作，通常为GET或POST。
+		$remote_addr ： 客户端的IP地址。
+		$remote_port ： 客户端的端口。
+		$remote_user ： 已经经过Auth Basic Module验证的用户名。
+========$request_filename ： 当前请求的文件路径，由root或alias指令与URI请求生成。
+		$scheme ： HTTP方法（如http，https）。
+		$server_protocol ： 请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+		$server_addr ： 服务器地址，在完成一次系统调用后可以确定这个值。
+		$server_name ： 服务器名称。
+		$server_port ： 请求到达服务器的端口号。
+		$request_uri ： 包含请求参数的原始URI，不包含主机名。
+		$uri ： 不带请求参数的当前URI，$uri不包含主机名。
+		$document_uri ： 与$uri相同
 	nginx反向代理搭建
 	文件系统nfs+nsync
 	作业：部署之前的pc项目+配合nginx的反向代理
