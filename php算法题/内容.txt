@@ -181,7 +181,7 @@ echo $middle;
 		function jieti($num){	//实际上是斐波那契数列
 			return $num<2? 1:jieti($num-1)+jieti($num-2);
 		}
-	2>从一个标准的Url提取出文件的扩展名[有多少种办法]
+	2>从一个标准的Url[https://abcde.com/aa/txt/cc/.txt]提取出文件的扩展名[有多少种办法7中办法]
 =========================================================================================
 高级部分
 [https://blog.csdn.net/s1070/article/details/51174725]
