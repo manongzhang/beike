@@ -1,0 +1,41 @@
+下载对应得软件包
+[root@localhost test]# yum install nfs* portmap -y
+关闭防火墙
+[root@localhost test]# systemctl stop firewalld
+=====================================================================================
+开启主master【nfs服务】
+[root@localhost test]# systemctl start nfs
+【查看是否开启nfs】
+[root@localhost test]#  rpcinfo -p | grep nfs 
+=====================================================================================
+【开启rpc服务】
+[root@localhost test]# systemctl start rpcbind
+【查看rpc占用端口】
+[root@localhost test]# rpcinfo -p localhost
+=====================================================================================
+【配置主masternfs配置文件】
+[root@localhost test]# vim /etc/exports
+/test 192.168.206.0/24(rw,sync)
+【修改linux内核安全级别】
+[root@localhost test]# setenforce 0
+=====================================================================================
+这个是slave服务器
+[root@localhost ~]# mount -t nfs 192.168.206.132:/test /test
+=====================================================================================
+查看
+[root@localhost test]# df -h
+文件系统                 容量  已用  可用 已用% 挂载点
+/dev/mapper/centos-root  8.0G  4.9G  3.1G   62% /
+devtmpfs                 480M     0  480M    0% /dev
+tmpfs                    492M     0  492M    0% /dev/shm
+tmpfs                    492M  7.4M  484M    2% /run
+tmpfs                    492M     0  492M    0% /sys/fs/cgroup
+/dev/sda1               1014M  146M  869M   15% /boot
+tmpfs                     99M     0   99M    0% /run/user/0
+192.168.206.132:/test    8.0G  5.4G  2.7G   68% /test
+=====================================================================================
+卸载
+[root@localhost /]# umount /test/
+
+
+

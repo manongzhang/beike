@@ -1,0 +1,37 @@
+1、查询"01"课程比"02"课程成绩高的学生的信息及课程分数 
+	mysql> select * from student st inner join score sc on st.s_id = sc.s_id and sc.c_id="01" join score sc_2 on st.s_id = sc_2.s_id and sc_2.c_id="02" and sc.s_score > sc_2.s_score; 
+2、查询"01"课程比"02"课程成绩低的学生的信息及课程分数
+	mysql> select * from student st inner join score sc on st.s_id = sc.s_id and sc.c_id="01" join score sc_2 on st.s_id = sc_2.s_id and sc_2.c_id="02" and sc.s_score < sc_2.s_score;
+3、查询平均成绩大于等于60分的同学的学生编号和学生姓名和平均成绩
+	mysql> select st.*,sum(sc.s_score),round(sum(sc.s_score)/count(*),2) avg_total,count(*) exam_total  from student st inner join score sc on st.s_id = sc.s_id group by st.s_id having avg_total >=60;
+4、查询平均成绩小于60分的同学的学生编号和学生姓名和平均成绩
+mysql> select st.*,sum(sc.s_score),round(sum(sc.s_score)/count(*),2) avg_total,count(*) exam_total  from student st inner join score sc on st.s_id = sc.s_id group by st.s_id having avg_total < 60;
+5、查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩
+	mysql> select st.*,count(*) as num,sum(sc.s_score) from student st inner join score sc on st.s_id = sc.s_id group by st.s_id;
+6、查询"李"姓老师的数量
+	mysql> select count(*) from teacher where t_name like "李%"; 
+7、查询学过"张三"老师授课的同学的信息 
+	mysql> select * from student where s_id in ( select sc.s_id from teacher te left join course co on te.t_id = co.t_id left join score sc on sc.c_id = co.c_id where te.t_name="张三");
+8、查询没学过"张三"老师授课的同学的信息 
+	select * from student where s_id not in ( select sc.s_id from teacher te left join course co on te.t_id = co.t_id left join score sc on sc.c_id = co.c_id where te.t_name="张三");
+9、查询学过编号为"01"并且也学过编号为"02"的课程的同学的信息
+	mysql> select * from student st inner join score sc on st.s_id = sc.s_id left join score sco on st.s_id = sco.s_id where sc.c_id="01" and sco.c_id="02";
+10、查询学过编号为"01"但是没有学过编号为"02"的课程的同学的信息
+	select a.* from student a where a.s_id in (select s_id from score where c_id='01' ) and a.s_id not in(select s_id from score where c_id='02');
+11、查询没有学全所有课程的同学的信息 
+	select st.*,count(*) as num from student st inner join score sc on st.s_id = sc.s_id group by st.s_id having num !=(select count(*) from course);
+12、查询至少有一门课与学号为"01"的同学所学相同的同学的信息
+	 select * from student where s_id in (select distinct  s_id from score where c_id in (select c_id from score where s_id = "01"));
+13、查询和"01"号的同学学习的课程完全相同的其他同学的信息 
+	select * from (select *,count(*) num from score where s_id !="01" and c_id in (select c_id from score where s_id = "01") group by s_id having num=(select count(*) from score where s_id ="01")) tmp inner join student st on tmp.s_id = st.s_id;
+14、查询没学过"张三"老师讲授的任一门课程的学生姓名
+15、查询两门及其以上不及格课程的同学的学号，姓名及其平均成绩 
+
+
+
+16、检索"01"课程分数小于60，按分数降序排列的学生信息
+17、按平均成绩从高到低显示所有学生的所有课程的成绩以及平均成绩
+18、查询每门课程被选修的学生数 
+19、查询出只有两门课程的全部学生的学号和姓名 
+20、查询男生、女生人数
+21、查询名字中含有"风"字的学生信息

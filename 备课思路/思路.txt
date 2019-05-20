@@ -11,7 +11,6 @@
 ========================================================================
 课堂练习;
 	1.请写一个shell文件
-
 		目录操作
 			mkdir,rm -rf
 		进程端口操作
@@ -112,60 +111,260 @@
 	配合使用:
 作业:完成之前项目首页实现真静态之前pc网站
 ============================================================
-第四天:[可以考虑不讲解]
-简单算法
-	桶排序
-	冒泡排序
-	快速排序
-	卢瑟福环
-	菲波那切数列数列
-		<?php 
-			$arr[1] = 1;
-			for($i = 2;$i < 100;$i++)
-			{
-				$arr[$i] = $arr[$i-1] + $arr[$i-2];
-			}
-			echo join(",",$arr);//将数组合并为一个字符串输出
-		?>
-作业:暂定
-============================================================
-第五天:
+第四天[nginx反向代理]
+	nginx配置反向代理
+		算法模式:
+			轮询
+			权重  weight
+			ip_hash
+			upstream模块
+			backup
+			
+实例:
+--------------------------------------------------------轮询
+    upstream test_info {
+      server 192.168.206.133:80;
+      server 192.168.206.137:80;
+   }
+proxy_pass http://test_info;
+--------------------------------------------------------权重
+upstream test_info {
+      server 192.168.206.133:80 weight=1;
+      server 192.168.206.137:80 weight=2;
+   }
+-------------------------------------------------------ip哈希
+upstream test_info {
+      ip_hash;
+      server 192.168.206.133:80;
+      server 192.168.206.137:80;
+}
+-------------------------------------------------------备份服务器
+    upstream test_info {
+      server 192.168.206.133:80;
+      server 192.168.206.137:80 backup;
+   }
+  session共享问题
+    php.ini
+		1315:session.save_handler = files ===session存储方式
+		1344:session.save_path = "/tmp"   ====存储在服务器那个位置
+ 项目部署到不同的服务器上面去
+ nfs网络文件系统
+ 作业:写一个注册登录功能通过反向代理调度到不同服务器，实现登录
+================================================================================
+第五天
+keepalived和nginx反向代理整合
+动静分离
+================================================================================
+第六天
+	动静分离
+		locaton
+	php和nginx连接方式
+		cgi 
+		fastcgi
+		socket
+		php-fpm
+	#php和session关系
+	sesison存储文件
+	session存储数据库
+	session存储数据库或者缓存
+	session_set_save_handler("open", "close", "read", "write", "destroy", "gc");
+================================================================================
+第七天:
 	mysql数据库
 	字段
 		字符串
+			char(M)   ===固定长度
+			varchar(M)===可变长度
+			text
 		整形
+			tinyint(M)==1个字节=2^0=1=127=
+			smallint(M)==2个字节=2^1=2=256*256=65536/2 =32768
+			int(M) ===4字节==2^2=4=2^32=256^4=65536^2=
+			bigint(M)===8个字节=2^3=8==256^8=
+		小数
+			float
+			decimal
+		时间
+			YEAR
+			TIME
+			DATE
+			DATETIME
+		枚举 
+			enum
+		乱码问题:中文mysql
+		字符集 gbk  utf8 utf8mb4
+				2     3     4
+			1.设置你表的编码
+			2.设置mysql你一什么样的方式写入我存储的数据[set names gbk|utf8]
+			3.查看的时候你也要设置mysql编码[set names utf8|gbk]
+================================================================================
+	字符集 gbk  utf8 utf8mb4
+				2     3     4
+			1.设置你表的编码
+			2.设置mysql你一什么样的方式写入我存储的数据[set names gbk|utf8]
+			3.查看的时候你也要设置mysql编码[set names utf8|gbk]
 	表
 		表操作
-		垂直分表
-		水平分表
-		表锁
+			DDL
+				INSERT,UPDATE,SELECT,DELETE
+			DML
+				alter table tableName add column columnName  type [添加列]
+				alter table tableName change column name name1 varchar(100);[修改列]
+				alter table tableName drop column columnName [删除列]
+		分表
+			一个表里面数据太多了一个表有几百亿条数据200G，一个表如果数据量上百万
+				id goods_name goods_id order_id pay_status  createtime
+				
+			垂直分表  ===分字段
+			水平分表  ===分数据
+		存储引擎
+			Innodb
+			myisam
+				数据结构区别
+					myisam:行级结构
+					innodb:二叉树
+				物理文件区别
+					mysiam:
+						.frm====表结构
+						.MYD====表数据
+						.MYI====索引
+					Innodb:
+						.frm=====表结构
+						.ibd=====数据
+				读和写区别
+					如果你网站业务是读
+						mysaim 读快
+						innodb写慢，读也慢，但是安全
+						
+				事物区别
+					innodb支持事物，支持行锁
+					mysaim不支持事物 支持表锁
+================================================================================
+	mysql锁[https://www.cnblogs.com/jpfss/p/8890250.html]
+		分类:
+			myisam
+			读锁【共享读】
+			写锁 【独占写】
+		分类特点
+			表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高，并发度最低。
+			行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高
+		表锁【秒杀场景】
+			读锁[共享锁]案例
+			写锁[排他锁]案例
+		innodb
 		行锁
-		文件锁
-	存储引擎
-		Innodb
-		myisam
-	优化
-		索引
+			共享锁
+			排他锁
+================================================================================
+	优化[表]
+		索引:其实就是一本书的目录
 			索引类型
-			查看mysql索引使用情况
+				普通索引
+					alter table tableName add index(字段名);
+				复合索引
+					alter table tableName add index(字段1,字段2);
+					
+					alter table ttt add index(id,name);
+					
+					select * from ttt where name="aaaa" and id=6;
+					select * from ttt where  id=6 and name="aaaa"; #用索引
+					select * from ttt where id=6; #用
+					select * from ttt where name="aaaa";
+				唯一索引 唯一:表里面内容唯一
+					alter table ttt add unique(name);
+				主键索引[primary key]
+				聚簇索引
+				全文索引
+					like
+					看下splinx
+			查看mysql索引
+				explain
+			索引覆盖
+				获取数据从索引文件里面拿去，不是从表文件里面获取
+			延迟关联
+					select * from tableName limit offset pageNum
+				分页
+			添加多个索引
+				索引重复添加:禁止一个字段添加多个索引
+			set profile
+			参考地址[https://www.cnblogs.com/lizhanwu/p/4191765.html]
+===============================================================================
 	sql表连接
 		inner join
 		left join
 		right join
 作业：写原生sql明天查看
-============================================================
-第六天:
-	sql语句练习
-作业:学生来讲解sql语句+大部分自己讲解
-============================================================
-第五天:mysql事物
-	mysql事物的使用
-		事物的隔离级别
+布置作业:
+================================================================================
 	mysql视图
+		创建视图
+			create view viewName(name,age) as +sql语句
+		查看视图
+			sql语句查询一样
+		删除视图
+			drop view + viewName
+		替换视图
+			第一种思路
+				create or replace view viewName(字段1,字段2) as sql语句
+			第二种思路
+				alter table viewName(字段1,字段2) as +sql语句
+		修改视图:
+			sql语句修改+视图修改表原始文件也修改了
+	mysql触发器
+		什么是触发器
+			触发器是一种特殊的存储过程，是嵌入到mysql的一段程序，它在插入，删除或修改特定表中的数据时触发执行
+		如何创建触发器
+			创建:
+				create trigger+触发器名称 +before|after+触发事件
+				on +表名 for each row
+				begin
+					//要执行的sql语句
+				end
+			测试:
+				create table goods(
+					id int(11) primary key auto_increment,
+					name varchar(10),
+					store int
+				);
+				create table orders (
+					id int(11) primary key auto_increment,
+					order_name varchar(10),
+					order_num int(11)
+				);
+			触发器:
+				实例1:
+					delimiter $$
+					create trigger test_trigger_1 after insert 
+					on orders 
+					for each row
+					begin
+					update goods set store = store-1 where id =1;
+					end
+					delimiter ;
+			查看触发器:
+				mysql> show triggers\G;
+			删除触发器:
+				
+			测试:
+				mysql> insert into orders set order_name="aaa",order_num=1;
+		总结:在修改订单表时候不用再使用程序修改商品表里面库存.
+		new的使用
+			第二个例子:
+			delimiter $$
+			create trigger test_trigger_2 after insert
+			on orders
+			for each row
+			begin
+				update goods set store=store-new.order_num where id = new.c_id;
+			end $$
+			delimiter ;
+================================================================================
 	mysql存储过程
+	
+	事物的隔离级别
 作业:使用存储过程模式上千万数据
-============================================================
-第七天:mysql日志
+================================================================================
+第八天:mysql日志
 	配置文件
 		general-log=ON
 		general-log-file=/usr/local/mysql/data/localhost_genarel.log
@@ -215,16 +414,12 @@
 	数据恢复
 		到时候在演示
 ==============================================================
-第八天:
+第九天:
 	mysql数据库主从搭建 || 主主搭建
 	mysql+keepalived
 	
 	将上月pc项目数据库使用mysql主从分离
 	数据库中间件athlas
-===============================================================
-第九天：keepalived+nginx反向代理
-		lvs+keepalived做负载均衡
-		session && cookie 问题
 ===============================================================
 第十天:
 	设计模式
@@ -232,14 +427,8 @@
 	工厂模式
 		类自动加载
 		autoload
-		sp_register_autolaod()
+		spl_register_autolaod()
 		命名空间[namespace]
-	观察者模式
-		已经实现场景
-	依赖注入
-		类的依赖关系
-	php反射
-	装饰者模式
 	
 作业:
 	暂定:使用各种设计模式封装一个mvc加上使用composer
@@ -263,7 +452,30 @@ swoole
 树
 =====================================================================
 
-
-
+第四天:[可以考虑不讲解]
+简单算法
+	桶排序
+	冒泡排序
+	快速排序
+	卢瑟福环
+	菲波那切数列数列
+		<?php 
+			$arr[1] = 1;
+			for($i = 2;$i < 100;$i++)
+			{
+				$arr[$i] = $arr[$i-1] + $arr[$i-2];
+			}
+			echo join(",",$arr);//将数组合并为一个字符串输出
+		?>
+作业:暂定
+============================================================
+第六天:
+	sql语句练习
+作业:学生来讲解sql语句+大部分自己讲解
+============================================================
+===============================================================
+第九天：keepalived+nginx反向代理
+		lvs+keepalived做负载均衡
+		session && cookie 问题
 		
 	

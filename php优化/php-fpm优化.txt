@@ -1,0 +1,22 @@
+php-fpm优化
+[www]
+user = nobody
+group = nobody
+【运行php-fpm的用户】
+listen = 127.0.0.1:9000
+【监听对应得端口】
+pm.max_children = 5 【在任意时间点php有多少个进程来接受用户请求】
+一般情况下每个php进程需要5M-10M的空间,如果php的内存为128M，
+那么就有128/5=25子进程
+【启动时候开启多少个子进程需要计算公式才可以看到】可以通过ps查看
+pm.start_servers = 2
+【php的应用在空闲时候可以在进程池里面空闲的最小进程数】目的是如果访问量增大，可以立即使用
+pm.min_spare_servers = 1
+【php的应用在空闲时候可以在进程池里面空闲的最大进程数】目的是如果访问量增大，可以立即使用
+pm.max_spare_servers = 3
+【每个进程介绍最多请求数建议1000】
+pm.max_requests = 500
+【记录请求慢的http请求以便情况】
+slowlog = log/slowlog.log
+【http请求超出多少秒记录上面的slowlog.log里面这是5s】
+request_slowlog_timeout = 5
