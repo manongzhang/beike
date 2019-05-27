@@ -1,0 +1,72 @@
+1.swoole安装不在叙述
+=======================================================================================
+2.使用例子
+	    $serv = new Swoole\Server('0.0.0.0', 9501, SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $serv->set(array(
+      'worker_num' => 1,
+      'daemonize' => false,
+      'backlog' => 128,
+   )); 
+
+  $serv->on('Connect',function(){
+    echo "this is connect";
+  }); 
+
+ $serv->on('Receive',function(){
+    echo "this is ercevive";
+  }); 
+
+$serv->on("Close",function(){
+   echo "this is close";
+});
+$serv->start();
+=======================================================================================
+3.swoole作为http服务器【效率非常高】
+$http = new Swoole\Http\Server("127.0.0.1", 9501);
+$http->on('request', function ($request, $response) {
+    $response->end("<h1>Hello Swoole. #".rand(1000, 9999)."</h1>");
+});
+$http->start();
+===========================
+$http = new Swoole\Http\Server("0.0.0.0", 9501);
+$http->on('request', function ($request, $response) {
+    $arr = check($request);
+    #$response->end("<h1>Hello Swoole. #".rand(1000, 9999)."</h1>");
+    $str=var_export($arr,true);
+    $response->end($str);
+});
+$http->start();
+function check($request){
+    $arr = $request->server;        
+    $info = $arr['path_info'];
+    $filePath = "/swoole/$info";
+    if(file_exists($filePath)){
+      include $filePath;       
+    }   
+
+    return $arr;
+}
+和nginx配合nginx做代理
+作业：搭建http服务器实现一个列表页面
+=========================================================================================
+2.使用swoole搭建websocket服务
+完成聊天市功能
+=========================================================================================
+swoole进程
+1.处理大数据
+    案例1
+		//创建进程测试时间
+		echo PHP_EOL . time() ;
+		$worker_num =3;//创建的进程数
+		for($i=0;$i<$worker_num ; $i++){
+			$process = new swoole_process('callback_function_we_write');
+			$pid = $process->start();
+		}
+
+		function callback_function_we_write(swoole_process $worker){
+			for($i=0;$i<100000000;$i++){}
+			echo PHP_EOL . time() ; 
+		}
+	
+2.进程通信
+	

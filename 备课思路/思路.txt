@@ -315,7 +315,7 @@ keepalived和nginx反向代理整合
 			触发器是一种特殊的存储过程，是嵌入到mysql的一段程序，它在插入，删除或修改特定表中的数据时触发执行
 		如何创建触发器
 			创建:
-				create trigger+触发器名称 +before|after+触发事件
+				create trigger+触发器名称+before|after+触发事件
 				on +表名 for each row
 				begin
 					//要执行的sql语句
@@ -344,7 +344,7 @@ keepalived和nginx反向代理整合
 			查看触发器:
 				mysql> show triggers\G;
 			删除触发器:
-				
+				mysql> drop trigger test_trigger_2;
 			测试:
 				mysql> insert into orders set order_name="aaa",order_num=1;
 		总结:在修改订单表时候不用再使用程序修改商品表里面库存.
@@ -365,7 +365,7 @@ keepalived和nginx反向代理整合
 作业:使用存储过程模式上千万数据
 ================================================================================
 第八天:mysql日志
-	配置文件
+	配置文件[/etc/my.conf]
 		general-log=ON
 		general-log-file=/usr/local/mysql/data/localhost_genarel.log
 	查询日志
@@ -416,7 +416,7 @@ keepalived和nginx反向代理整合
 ==============================================================
 第九天:
 	mysql数据库主从搭建 || 主主搭建
-	mysql+keepalived
+
 	
 	将上月pc项目数据库使用mysql主从分离
 	数据库中间件athlas
@@ -473,9 +473,7 @@ swoole
 	sql语句练习
 作业:学生来讲解sql语句+大部分自己讲解
 ============================================================
-===============================================================
 第九天：keepalived+nginx反向代理
 		lvs+keepalived做负载均衡
 		session && cookie 问题
 		
-	

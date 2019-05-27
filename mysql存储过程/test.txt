@@ -1,0 +1,62 @@
+1.创建存储过程
+delimiter $$
+create procedure demo01()
+begin
+	insert into tt set name="zhangsan";
+end $$
+========================================================================================
+2.查看存储过程
+mysql> show procedure status\G;
+*************************** 1. row ***************************
+                  Db: test_views
+                Name: demo01
+                Type: PROCEDURE
+             Definer: root@localhost
+            Modified: 2019-05-21 21:13:49
+             Created: 2019-05-21 21:13:49
+       Security_type: DEFINER
+             Comment: 
+character_set_client: utf8
+collation_connection: utf8_general_ci
+  Database Collation: utf8_general_ci
+1 row in set (0.01 sec)
+
+ERROR: 
+No query specified
+=======================================================================================
+mysql> drop procedure demo01;
+========================================================================================
+执行存储过程并且查看
+mysql> call demo01;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from tt;
++----+----------+
+| id | name     |
++----+----------+
+|  1 | lisi     |
+|  2 | zhangsan |
++----+----------+
+2 rows in set (0.00 sec)
+========================================================================================
+3.删除存储过程
+mysql> drop procedure demo01;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> 
+========================================================================================
+4.使用while循环的存储过程
+delimiter $$
+create procedure demo01()
+begin
+	declare v int;
+	set v=0;
+	while v < 10 do
+	insert into tt set name="lisi";
+	set v = v+1;
+	end while;
+end $$
+=======================================================================================
+案例:使用存储过程存储1w条数据不可以重复
+随机生成字符串
+mysql> select substring(md5(rand()*100),10,10);
