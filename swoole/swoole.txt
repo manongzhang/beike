@@ -1,5 +1,41 @@
 1.swoole安装不在叙述
+
+案例swoole创建web服务器
+	$http = new swoole_http_server("0.0.0.0", 9501);
+	$http->on('request', function ($request, $response) {
+    var_dump($request->get, $request->post);
+    $response->header("Content-Type", "text/html; charset=utf-8");
+    $response->end("<h1>Hello Swoole. #".rand(1000, 9999)."</h1>");
+});
+
+$http->start();
+//案例演示
+    $http = new swoole_http_server("0.0.0.0", 9501);
+    $http->on('request', function ($request, $response) {
+        $file = $request->server['request_uri'];
+        $first = isset($request->get['first']) ? intval($request->get['first']) : 10; 
+        $second= isset($request->get['second']) ? intval($request->get['second']) : 20; 
+        $file = trim($file,"/");
+        $filePath = "/swoole/$file";
+    
+        if(file_exists($filePath)){
+            $str = require $filePath;
+            $response->end($str);
+        }   
+});
+$http->start();
+//对应得方法
+文档里面说
+======================================================================================
+配合nginx做代理
+nginx配置
+      proxy_http_version 1.1;
+      proxy_set_header Connection "keep-alive";
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_pass http://127.0.0.1:9501;
+别的什么都不用改
 =======================================================================================
+//使用swoole创建tcp服务器
 2.使用例子
 	    $serv = new Swoole\Server('0.0.0.0', 9501, SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $serv->set(array(
@@ -46,13 +82,44 @@ function check($request){
 
     return $arr;
 }
-和nginx配合nginx做代理
-作业：搭建http服务器实现一个列表页面
 =========================================================================================
 2.使用swoole搭建websocket服务
-完成聊天市功能
 =========================================================================================
 swoole进程
+1.创建进程:swoole_process
+$worker_num =2;//创建的进程数
+for($i=0;$i<$worker_num ; $i++){
+    $process = new swoole_process('callback_function_we_write');
+    $pid = $process->start();
+    echo PHP_EOL . $pid;//
+}
+function callback_function_we_write(swoole_process $worker){
+    echo  PHP_EOL;
+    var_dump($worker);
+    echo  PHP_EOL;
+}
+=========================================================================================
+2.使用多进程观察时间
+echo PHP_EOL . time() ;
+$worker_num =3;//创建的进程数
+for($i=0;$i<$worker_num ; $i++){
+    $process = new swoole_process('callback_function_we_write');
+    $pid = $process->start();
+}
+
+function callback_function_we_write(swoole_process $worker){
+    for($i=0;$i<100000000;$i++){}
+    echo PHP_EOL . time() ; 
+}
+//常规流程
+echo PHP_EOL . time() ;
+for($i=0;$i<100000000;$i++){}
+for($i=0;$i<100000000;$i++){}
+for($i=0;$i<100000000;$i++){}
+echo PHP_EOL . time() ;
+3.=========================================================================================
+
+案例：使用场景
 1.处理大数据
     案例1
 		//创建进程测试时间
@@ -69,4 +136,5 @@ swoole进程
 		}
 	
 2.进程通信
+	父子进程通信
 	

@@ -1,5 +1,4 @@
-1.
-安装docker前提条件
+1.安装docker前提条件
 linux系统
 Docker 要求 CentOS 系统的内核版本高于 3.10 
 [root@localhost ~]# uname -r
@@ -38,8 +37,6 @@ Docker 要求 CentOS 系统的内核版本高于 3.10
 (4)docker ps 显示当前正在运行的容器
 (5)docker exec -it myphpfpm /bin/bash  进入对应得docker容器
 
-
-
 =======================================================================================
 实战安装nginx
 [root@localhost ~]# docker search nginx [查找]
@@ -53,22 +50,49 @@ docker下载nginx
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
 2995251e2516        nginx               "nginx -g 'daemon of…"   47 seconds ago      Up 44 seconds       0.0.0.0:8081->80/tcp   nginx_test
 =======================================================================================
-
 第一种方案:
-部署nginx
-	[root@localhost www]# docker run -d -p 8083:80 --name nginx_test 
-		-v /nginx/www:/usr/share/nginx/html 
-		-v /nginx/conf/nginx.conf:/etc/nginx/nginx.conf 
-		-v /nginx/logs:/var/log/nginx nginx
+部署nginx配置通过docker cp进行配置
+[root@localhost nginx]# docker cp /nginx/conf/ 2995251e2516:/etc/nginx/nginx.conf 
 =======================================================================================
+
 第二种方案:
-部署nginx配置文件
-[root@localhost nginx]# docker cp 2995251e2516:/etc/nginx/nginx.conf /nginx/conf/
+部署nginx
+	[root@localhost conf]# docker run --name my_nginx -p 8080:80 -d -v /nginx/html:/usr/share/nginx/html  -v /nginx/conf/nginx.conf:/etc/nginx/nginx.conf   nginx
 =======================================================================================
-
+							
 部署PHP
+[root@localhost ~]# docker search php #查找php
+[root@localhost ~]# docker pull phpdockerio/php72-fpm  #下载php扩展
+[root@localhost ~]# [root@localhost ~]# docker run -d -p 9000:9000  --name myphpfpm -v /nginx/html:/usr/share/nginx/html phpdockerio/php72-fpm  #启动php
 
 
 
-修改镜像源
-https://www.cnblogs.com/wushuaishuai/p/9984228.html#_label0
+
+php和nginx关联
+关联容器:docker run  -p 8080:80 -d -v /nginx/html:/usr/share/nginx/html  -v /nginx/conf/nginx.conf:/etc/nginx/nginx.conf --name my_nginx --link myphpfpm:phpfpm  nginx
+
+修改nginx容器配置
+location ~ \.php$ {
+        root   /usr/share/nginx/html;#这块要改为映射地址
+        fastcgi_pass   phpfpm:9000;#127.0.0.1修改为phpfpm
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  /usr/share/nginx/html/$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+=======================================================================================================================================================================
+安装mysql
+[root@localhost ~]# docker search mysql
+[root@localhost ~]# docker pull mysql
+[root@localhost ~]# docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 --name my_mysql mysql
+=======================================================================================================================================================================
+php和mysql关联
+docker run -d -p 9000:9000  --name myphpfpm -v /nginx/html:/usr/share/nginx/html --link my_mysql:mysql  phpdockerio/php72-fpm
+php和nginx关联
+docker run  -p 8080:80 -d -v /nginx/html:/usr/share/nginx/html  -v /nginx/conf/nginx.conf:/etc/nginx/nginx.conf --name my_nginx --link myphpfpm:phpfpm  nginx
+
+
+
+修改docker镜像源
+https://www.jianshu.com/p/6172f03a24ff
+docker bug解决
+https://www.cnblogs.com/zhenyuyaodidiao/p/4691232.html

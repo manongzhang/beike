@@ -1,0 +1,17 @@
+   
+//订阅
+   $redis = new redis();
+    $redis->connect("127.0.0.1",6379);
+
+    $redis->subscribe(array("test"),'callback');
+    function callback($instance, $channelName, $message){
+        echo $channelName, "==>", $message,PHP_EOL; 
+    } 
+//发布
+    $redis = new Redis();
+    $redis->connect("127.0.0.1",6379);
+    $redis->publish("test","hellow ord");	
+	
+	
+	
+	

@@ -1,0 +1,11 @@
+1.安装地址[https://wiki.swoole.com/wiki/page/6.html]
+2.包地址【http://pecl.php.net/package/swoole】
+3.下载[root@iz2zefwlhq937bc2wfpp1oz swoole]# wget http://pecl.php.net/get/swoole-4.2.2.tgz
+4.[root@iz2zefwlhq937bc2wfpp1oz swoole]# tar -xvf swoole-4.2.2.tgz  解压
+5.[root@iz2zefwlhq937bc2wfpp1oz swoole-4.2.2]# /usr/local/php7/bin/phpize [phpize编译]
+6.[root@iz2zefwlhq937bc2wfpp1oz swoole-4.2.2]# ./configure --with-php-config=/usr/local/php7/bin/php-config  编译安装
+7.[root@iz2zefwlhq937bc2wfpp1oz swoole-4.2.2]# make && make install 编译且安装
+8.修改配置文件不在叙述
+==========================================================================================
+http  websocket
+
